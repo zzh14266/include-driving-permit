@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>异常图片列表</title>
+  <script src="../script/ajax.js"></script>
+  <script src="../script/jquery.min.js"></script>
+  <script src="../script/vue.js"></script>
+  <script src="../script/axios.min.js"></script>
+  <script src="../script/url.js"></script>
+<link rel="icon" href="favicon.ico" type="image/ico">
+  <meta name="keywords" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+  <meta name="description" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+  <meta name="author" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/materialdesignicons.min.css" rel="stylesheet">
+<link href="css/style.min.css" rel="stylesheet">
+</head>
+
+<body id="body">
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <aside class="lyear-layout-sidebar">
+
+      <!-- logo -->
+      <div id="logo" class="sidebar-header">
+        <a onclick=jump("index.html?color=")><img src="images/logo-sidebar.png" width="54px" title="LightYear" alt="LightYear" /></a>
+      </div>
+      <div class="lyear-layout-sidebar-scroll">
+
+        <nav class="sidebar-main">
+          <ul class="nav nav-drawer">
+            <li> <a onclick=jump("data_download.html?color=")><i class="mdi mdi-home"></i>数据下载</a> </li>
+            <li>
+              <a onclick=jump("abnormal_image.html?color=")><i class="mdi mdi-format-align-justify"></i>可疑车辆</a>
+            </li>
+            <li class="nav-item nav-item-has-subnav">
+              <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i>手动处理图片</a>
+              <ul class="nav nav-subnav">
+                <li> <a onclick=jump("exception_list.html?color=")>异常图片列表</a> </li>
+                <li> <a onclick=jump("manually_modify.html?color=")>手动处理</a> </li>
+              </ul>
+            </li>
+            <li><a onclick=jump("image_identification.html?color=")><i class="mdi mdi-palette"></i>图像识别</a> </li>
+          </ul>
+        </nav>
+      </div>
+
+    </aside>
+    <!--End 左侧导航-->
+
+    <!--头部信息-->
+    <header class="lyear-layout-header">
+
+      <nav class="navbar navbar-default">
+        <div class="topbar">
+
+          <div class="topbar-left">
+            <div class="lyear-aside-toggler">
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+            </div>
+            <span class="navbar-page-title">手动处理图片 - 异常图片列表</span>
+          </div>
+
+          <ul class="topbar-right">
+            <!--切换主题配色-->
+            <li class="dropdown dropdown-skin">
+              <span data-toggle="dropdown" class="icon-palette"><i class="mdi mdi-palette"></i></span>
+              <ul class="dropdown-menu dropdown-menu-right" data-stopPropagation="true">
+                <li class="drop-title"><p>主题</p></li>
+                <li class="drop-skin-li clearfix">
+                  <span class="inverse">
+                    <input onclick="getTheme('default')" type="radio" name="site_theme" value="default" id="site_theme_1" checked>
+                    <label for="site_theme_1"></label>
+                  </span>
+                  <span>
+                    <input onclick="getTheme('dark')" type="radio" name="site_theme" value="dark" id="site_theme_2">
+                    <label for="site_theme_2"></label>
+                  </span>
+                  <span>
+                    <input onclick="getTheme('translucent')" type="radio" name="site_theme" value="translucent" id="site_theme_3">
+                    <label for="site_theme_3"></label>
+                  </span>
+                </li>
+              </ul>
+            </li>
+            <!--切换主题配色-->
+          </ul>
+
+        </div>
+      </nav>
+
+    </header>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body" id="app">
+
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>编号</th>
+                        <th>图片地址</th>
+                        <th>图片异常原因</th>
+                        <th>图片类型</th>
+                        <th>手动处理图片</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="list in imagedataList">
+                        <td>{{list.id}}</td>
+                        <td>{{list.imgPath}}</td>
+                        <td>{{list.abnormalImage}}</td>
+                        <td>{{list.typename}}</td>
+                        <td>
+                          <div class="btn-group">
+                            <a class="btn btn-xs btn-default" @click="jump(list.typeid,list.id)" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <ul class="pagination">
+                  <li id="l1"><span @click="changeUp">«</span></li>
+                  <li><a>{{ye}}</a></li>
+                  <li><a>{{sun}}</a></li>
+                  <li id="l11"><span @click="changeDown">»</span></li>
+                </ul>
+       
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="js/main.min.js"></script>
+<script type="text/javascript">
+$(function(){
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+});
+</script>
+</body>
+<script type="text/javascript">
+  var y = 1;
+  var sun = 0;
+  var lastId =0;
+  var firstId=0;
+  var color = 'default';
+
+  function jump(url){
+    window.location.href=url+color;
+  }
+
+  function getId(key) {
+    var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) {
+      return unescape(r[2]);
+    }
+    return null;
+  }
+
+  var config = {
+    el: "#app",
+    data: {
+      imagedataList:[],
+      ye:'第1页',
+      sun:'共0页'
+    },
+    mounted:function (){
+      color = getId("color");
+      $("#body").attr("data-theme",color);
+
+      var serverUrl=fwqURL+"50//getSun";
+      axios.get(serverUrl)
+              .then(function(res){
+                sun=res.data;
+                this.vue.sun='共'+sun+'页';
+                this.vue.ye='第'+y+'页';
+              })
+              .catch();
+
+      this.changePage();
+
+    },
+    methods:{
+      changeUp(){
+        if (y===1){
+          alert("已经是第一页了");
+          return;
+        }
+
+        y=y-1;
+        vue.$data.ye='第'+y+'页';
+
+        this.changePageUp();
+      },
+      changeDown(){
+        if (sun===y){
+          alert("已经是最后一页了");
+          return;
+        }
+
+        y=y+1;
+        vue.$data.ye='第'+y+'页';
+
+        this.changePage();
+      },
+      jump(number,id){
+        window.location.href="manually_modify.html?id="+id+"&number="+number;
+      },
+      changePage(){
+        var serverUrl=fwqURL+"50//getError?lastId="+lastId;
+        axios.get(serverUrl)
+                .then(function(res){
+                  var result=res.data;
+                  this.vue.imagedataList=result;
+                  lastId=result[9].id;
+                  firstId=result[0].id;
+                })
+                .catch();
+      },
+      changePageUp(){
+        vue.$data.imagedataList=null;
+        var serverUrl=fwqURL+"50//getErrorUp?firstId="+firstId;
+        axios.get(serverUrl)
+                .then(function(res){
+                  var result=res.data;
+                  this.vue.imagedataList=result;
+                  lastId=result[9].id;
+                  firstId=result[0].id;
+                })
+                .catch();
+      }
+    }
+  }
+  var vue=new Vue(config);
+
+</script>
+</html>

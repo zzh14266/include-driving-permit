@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.turingit.drivingLicense.mapper.SummarizingMapper">
+
+    <!--    “仅可用于运送不可拆解物体”大件运输车辆假冒绿色通道嫌疑的真假证记录-->
+    <select id="selectExport1" resultType="com.turingit.drivingLicense.pojo.Export">
+        select concat(s.checkId,'\t') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+               (case s.vL_Limit_Text
+                    when '空' then '假证嫌疑'
+                    when '仅可用于运送不可拆解物体' then '挂车行驶证印有“仅可用于运送不可拆解物体”'
+                    else '未知' end) vL_Limit_Text
+                ,s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+               s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path
+        from public.summarizing2 s
+        inner join public.checkdata2 c
+        on s.checkid=c.checkid and s.t_licence_plate in (
+            select distinct on (t_licence_plate) t_licence_plate
+            from public.summarizing2
+            where VL_Limit_Text = '仅可用于运送不可拆解物体'
+        ) and s.t_licence_plate in (
+            select distinct on (t_licence_plate) t_licence_plate
+            from public.summarizing2
+            where VL_Limit_Text = '空'
+        )order by s.t_licence_plate
+        limit 10 offset #{pagination}
+    </select>
+
+    <!--    第1个总数-->
+    <select id="countExport1" resultType="java.lang.Integer">
+        select count(s.checkId)
+        from public.summarizing2 s
+                    inner join public.checkdata2 c
+                            on s.checkid=c.checkid and s.t_licence_plate in (
+                                select distinct on (t_licence_plate) t_licence_plate
+        from public.summarizing2
+        where VL_Limit_Text = '仅可用于运送不可拆解物体'
+            ) and s.t_licence_plate in (
+        select distinct on (t_licence_plate) t_licence_plate
+        from public.summarizing2
+        where VL_Limit_Text = '空'
+            )
+    </select>
+    <!--1下载-->
+    <select id="getS1" resultType="com.turingit.drivingLicense.pojo.Export">
+        select concat(s.checkId,'\t') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+               (case s.vL_Limit_Text
+                    when '空' then '假证嫌疑'
+                    when '仅可用于运送不可拆解物体' then '挂车行驶证印有“仅可用于运送不可拆解物体”'
+                    else '未知' end) vL_Limit_Text
+                ,s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+               s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path
+        from public.summarizing2 s
+                 inner join public.checkdata2 c
+                            on s.checkid=c.checkid and s.t_licence_plate in (
+                                select distinct on (t_licence_plate) t_licence_plate
+        from public.summarizing2
+        where VL_Limit_Text = '仅可用于运送不可拆解物体'
+            ) and s.t_licence_plate in (
+        select distinct on (t_licence_plate) t_licence_plate
+        from public.summarizing2
+        where VL_Limit_Text = '空'
+            )order by s.t_licence_plate
+    </select>
+
+
+    <!--    “仅可用于运送不可拆解物体”大件运输车的绿色通道记录-->
+    <select id="selectExport2" resultType="com.turingit.drivingLicense.pojo.Export">
+        select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+            (case s.vL_Limit_Text
+                when '空' then '假证嫌疑'
+                when '仅可用于运送不可拆解物体' then '挂车行驶证印有“仅可用于运送不可拆解物体”'
+                else '未知' end
+            ) vL_Limit_Text,
+            s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+            s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path
+        FROM public.summarizing2 s,public.checkdata2 c
+        where s.VL_Limit_Text ='仅可用于运送不可拆解物体' and s.checkId=c.checkId and c.fee=0
+        order by s.t_licence_plate
+        limit 10 offset #{pagination}
+    </select>
+
+    <!--    第2个总数-->
+    <select id="countExport2" resultType="java.lang.Integer">
+        select count(checkid)
+        from (
+            select distinct
+            on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkid
+            FROM public.summarizing2 s, public.checkdata2 c
+            where s.VL_Limit_Text ='仅可用于运送不可拆解物体' and s.checkId= c.checkId and c.fee=0
+            order by s.t_licence_plate
+        )aaa
+    </select>
+    <!--2下载-->
+    <select id="getS2" resultType="com.turingit.drivingLicense.pojo.Export">
+        select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+            (case s.vL_Limit_Text
+            when '空' then '假证嫌疑'
+            when '仅可用于运送不可拆解物体' then '挂车行驶证印有“仅可用于运送不可拆解物体”'
+            else '未知' end
+            ) vL_Limit_Text,
+            s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+            s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path
+        FROM public.summarizing2 s,public.checkdata2 c
+        where s.VL_Limit_Text ='仅可用于运送不可拆解物体' and s.checkId=c.checkId and c.fee=0
+        order by s.t_licence_plate
+    </select>
+
+
+    <!--    同个挂车车牌总质量不一致-->
+    <select id="selectExport3" resultType="com.turingit.drivingLicense.pojo.Export">
+        select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+            s.vL_Limit_Text,s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+            s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path
+        from public.summarizing2 s inner join public.checkdata2 c on s.checkid=c.checkid and s.t_licence_plate in(
+            select t_licence_plate from (
+                select distinct on (t_licence_plate ,t_total_mass) t_licence_plate ,t_total_mass
+                from public.summarizing2
+                where t_licence_plate is not null and t_licence_plate &lt;&gt; '' and t_total_mass is not null and  t_total_mass &lt;&gt; ''
+                order by t_licence_plate
+            )aaa group by t_licence_plate having count(*)>1
+        )and t_total_mass is not null and t_total_mass &lt;&gt; ''
+        limit 10 offset #{pagination}
+    </select>
+
+    <!--    第3个总数-->
+    <select id="countExport3" resultType="java.lang.Integer">
+        select count(checkid)
+        from (
+            select distinct
+            on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkid
+            from public.summarizing2 s inner join public.checkdata2 c
+            on s.checkid= c.checkid and s.t_licence_plate in (
+                select t_licence_plate from (
+                select distinct on (t_licence_plate ,t_total_mass) t_licence_plate ,t_total_mass
+                from public.summarizing2
+                where t_licence_plate is not null and t_licence_plate &lt;&gt; '' and t_total_mass is not null and t_total_mass &lt;&gt; ''
+                order by t_licence_plate
+                ) aaa group by t_licence_plate having count (*)>1
+                ) and t_total_mass is not null and t_total_mass &lt;&gt; ''
+        )aaa
+    </select>
+    <!--3下载-->
+    <select id="getS3" resultType="com.turingit.drivingLicense.pojo.Export">
+        select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+            s.vL_Limit_Text,s.licence_plate,s.vehicle_type vehicle_type_new,s.owner,s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+            s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path
+        from public.summarizing2 s inner join public.checkdata2 c on s.checkid=c.checkid and s.t_licence_plate in(
+            select t_licence_plate from (
+            select distinct on (t_licence_plate ,t_total_mass) t_licence_plate ,t_total_mass
+            from public.summarizing2
+            where t_licence_plate is not null and t_licence_plate &lt;&gt; '' and t_total_mass is not null and  t_total_mass &lt;&gt; ''
+            order by t_licence_plate
+            )aaa group by t_licence_plate having count(*)>1
+            )and t_total_mass is not null and t_total_mass &lt;&gt; ''
+    </select>
+
+
+    <!--    宽度大于等于3000mm但无“仅可用于运送不可拆解物体”字样-->
+    <select id="selectExport4" resultType="com.turingit.drivingLicense.pojo.Export">
+        SELECT checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicleType,
+            vehicleClass,calculationFeeStr,sourcedrivertelephone,vL_Limit_Text,licence_plate,vehicle_type vehicle_type_new,owner, address,function,
+            brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,t_vehicle_type,t_owner,
+            t_address,t_function,t_brand_model,t_plate_number,t_record_date,t_opening_date,load_capacity,t_total_mass,t_curb_weight,trailer_dimension,img_path
+        FROM (
+            select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+                (case s.vL_Limit_Text
+                    when '空' then ''
+                    when '仅可用于运送不可拆解物体' then '仅可用于运送不可拆解物体'
+                    else '' end
+                ) vL_Limit_Text,s.licence_plate,s.vehicle_type,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+                s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path,
+                regexp_split_to_array(s.trailer_dimension,'×') as aaa
+            from public.summarizing2 s
+            inner join public.checkdata2 c
+            on s.checkid=c.checkid and s.trailer_dimension &lt;&gt; '' and position('×' in s.trailer_dimension)>0
+        ) t
+        where VL_Limit_Text &lt;&gt; '仅可用于运送不可拆解物体'
+        and (CASE WHEN trim(both 'mm' from t.aaa[2]) IS NULL or trim(both 'mm' from t.aaa[2])='' THEN 0 ELSE (trim(both 'mm' from t.aaa[2]) :: numeric ) END )>=3000
+        limit 10 offset #{pagination}
+    </select>
+
+    <!--    第4个总数-->
+    <select id="countExport4" resultType="java.lang.Integer">
+        SELECT count(checkId)
+        FROM (
+            select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkId,s.vL_Limit_Text,
+                regexp_split_to_array(s.trailer_dimension,'×') as aaa
+            from public.summarizing2 s
+            inner join public.checkdata2 c
+            on s.checkid=c.checkid and s.trailer_dimension &lt;&gt; '' and position('×' in s.trailer_dimension)>0
+        ) t
+        where VL_Limit_Text &lt;&gt; '仅可用于运送不可拆解物体'
+            and (CASE WHEN trim(both 'mm' from t.aaa[2]) IS NULL or trim(both 'mm' from t.aaa[2])='' THEN 0 ELSE (trim(both 'mm' from t.aaa[2]) :: numeric ) END )>=3000
+    </select>
+    <!--4下载-->
+    <select id="getS4" resultType="com.turingit.drivingLicense.pojo.Export">
+        SELECT checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicleType,
+               vehicleClass,calculationFeeStr,sourcedrivertelephone,vL_Limit_Text,licence_plate,vehicle_type_new,owner, address,function,
+               brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,t_vehicle_type,t_owner,
+               t_address,t_function,t_brand_model,t_plate_number,t_record_date,t_opening_date,load_capacity,t_total_mass,t_curb_weight,trailer_dimension,img_path
+        FROM (
+                 select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+                     (case s.vL_Limit_Text
+                     when '空' then ''
+                     when '仅可用于运送不可拆解物体' then '仅可用于运送不可拆解物体'
+                     else '' end
+                     ) vL_Limit_Text,s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+                     s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path,
+                     regexp_split_to_array(s.trailer_dimension,'×') as aaa
+                 from public.summarizing2 s
+                     inner join public.checkdata2 c
+                 on s.checkid=c.checkid and s.trailer_dimension &lt;&gt; '' and position('×' in s.trailer_dimension)>0
+             ) t
+        where VL_Limit_Text &lt;&gt; '仅可用于运送不可拆解物体'
+          and (CASE WHEN trim(both 'mm' from t.aaa[2]) IS NULL or trim(both 'mm' from t.aaa[2])='' THEN 0 ELSE (trim(both 'mm' from t.aaa[2]) :: numeric ) END )>=3000
+    </select>
+
+
+    <!--    车尾车牌与行驶证不符-->
+    <select id="selectExport5" resultType="com.turingit.drivingLicense.pojo.Export">
+        select * from(
+            select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkid,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+                (case s.vL_Limit_Text
+                    when '空' then ''
+                    when '仅可用于运送不可拆解物体' then '仅可用于运送不可拆解物体'
+                    else '' end
+                ) vL_Limit_Text,s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+                s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path,s2.trailer_vehicleId
+            from public.summarizing2 s
+            inner join public.checkdata2 c on s.checkid=c.checkid
+            inner join(
+                select checkid,t_licence_plate,trailer_vehicleId
+                from public.summarizing2
+                where trailer_vehicleId is not null
+            )s2 on s.checkid =s2.checkid and s.t_licence_plate is not null
+        )s3
+        where t_licence_plate &lt;&gt; trailer_vehicleId
+        limit 10 offset #{pagination}
+    </select>
+
+    <!--    第5个总数-->
+    <select id="countExport5" resultType="java.lang.Integer">
+        select count(checkid)
+        from(
+            select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkId,s.t_licence_plate,s2.trailer_vehicleId
+            from public.summarizing2 s
+            inner join public.checkdata2 c on s.checkid=c.checkid
+            inner join(
+                select checkid,t_licence_plate,trailer_vehicleId
+                from public.summarizing2
+                where trailer_vehicleId is not null
+            )s2 on s.checkid =s2.checkid and s.t_licence_plate is not null
+        )s3
+        where t_licence_plate &lt;&gt; trailer_vehicleId
+    </select>
+    <!--5下载-->
+    <select id="getS5" resultType="com.turingit.drivingLicense.pojo.Export">
+        select * from(
+                         select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'\t') checkid,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+                             (case s.vL_Limit_Text
+                             when '空' then ''
+                             when '仅可用于运送不可拆解物体' then '仅可用于运送不可拆解物体'
+                             else '' end
+                             ) vL_Limit_Text,s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
+                             s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path,s2.trailer_vehicleId
+                         from public.summarizing2 s
+                             inner join public.checkdata2 c on s.checkid=c.checkid
+                             inner join(
+                             select checkid,t_licence_plate,trailer_vehicleId
+                             from public.summarizing2
+                             where trailer_vehicleId is not null
+                             )s2 on s.checkid =s2.checkid and s.t_licence_plate is not null
+                     )s3
+        where t_licence_plate &lt;&gt; trailer_vehicleId
+    </select>
+
+
+    <insert id="updateSummar" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" separator=";">
+            insert into public.summarizing2
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                checkid,
+            <if test="item.plateNumber != null" >plate_number,</if>
+            <if test="item.address != null" >address,</if>
+            <if test="item.openingDate != null" >opening_date,</if>
+            <if test="item.brandModel != null" >brand_model,</if>
+            <if test="item.vehicleType != null" >vehicle_type,</if>
+            <if test="item.owner != null" >owner,</if>
+            <if test="item.function != null" >function,</if>
+            <if test="item.engineNumber != null" >engine_number,</if>
+            <if test="item.licencePlate != null" >licence_plate,</if>
+            <if test="item.recordDate != null" >record_date,</if>
+            <if test="item.trailerDimension != null" >trailer_dimension,</if>
+            <if test="item.tPlateNumber != null" >t_plate_number,</if>
+            <if test="item.tAddress != null" >t_address,</if>
+            <if test="item.tOpeningDate != null" >t_opening_date,</if>
+            <if test="item.tBrandModel != null" >t_brand_model,</if>
+            <if test="item.tVehicleType != null" >t_vehicle_type,</if>
+            <if test="item.tOwner != null" >t_owner,</if>
+            <if test="item.tFunction != null" >t_function,</if>
+            <if test="item.tEngineNumber != null" >t_engine_number,</if>
+            <if test="item.tLicencePlate != null" >t_licence_plate,</if>
+            <if test="item.tRecordDate != null" >t_record_date,</if>
+            <if test="item.tractionVehicleid != null" >traction_vehicleid,</if>
+            <if test="item.automobileBrand != null" >automobile_brand,</if>
+            <if test="item.loadCapacity != null" >load_capacity,</if>
+            <if test="item.curbWeight != null" >curb_weight,</if>
+            <if test="item.tTotalMass != null" >t_total_mass,</if>
+            <if test="item.tCurbWeight != null" >t_curb_weight,</if>
+            <if test="item.trailerVehicleid != null" >trailer_vehicleid,</if>
+            <if test="item.vehicleDimension != null" >vehicle_dimension,</if>
+            <if test="item.weightLimt != null" >weight_limt,</if>
+            <if test="item.vlLimitText != null" >vl_limit_text,</if>
+            <if test="item.imgPath != null" >img_path,</if>
+            </trim>
+            VALUES
+            <trim prefix="(" suffix=")" suffixOverrides=",">#{item.checkid,jdbcType=VARCHAR},
+            <if test="item.plateNumber != null" >#{item.plateNumber,jdbcType=VARCHAR},</if>
+            <if test="item.address != null" >#{item.address,jdbcType=VARCHAR},</if>
+            <if test="item.openingDate != null" >#{item.openingDate,jdbcType=VARCHAR},</if>
+            <if test="item.brandModel != null" >#{item.brandModel,jdbcType=VARCHAR},</if>
+            <if test="item.vehicleType != null" >#{item.vehicleType,jdbcType=VARCHAR},</if>
+            <if test="item.owner != null" >#{item.owner,jdbcType=VARCHAR},</if>
+            <if test="item.function != null" >#{item.function,jdbcType=VARCHAR},</if>
+            <if test="item.engineNumber != null" >#{item.engineNumber,jdbcType=VARCHAR},</if>
+            <if test="item.licencePlate != null" >#{item.licencePlate,jdbcType=VARCHAR},</if>
+            <if test="item.recordDate != null" >#{item.recordDate,jdbcType=VARCHAR},</if>
+            <if test="item.trailerDimension != null" >#{item.trailerDimension,jdbcType=VARCHAR},</if>
+            <if test="item.tPlateNumber != null" >#{item.tPlateNumber,jdbcType=VARCHAR},</if>
+            <if test="item.tAddress != null" >#{item.tAddress,jdbcType=VARCHAR},</if>
+            <if test="item.tOpeningDate != null" >#{item.tOpeningDate,jdbcType=VARCHAR},</if>
+            <if test="item.tBrandModel != null" >#{item.tBrandModel,jdbcType=VARCHAR},</if>
+            <if test="item.tVehicleType != null" >#{item.tVehicleType,jdbcType=VARCHAR},</if>
+            <if test="item.tOwner != null" >#{item.tOwner,jdbcType=VARCHAR},</if>
+            <if test="item.tFunction != null" >#{item.tFunction,jdbcType=VARCHAR},</if>
+            <if test="item.tEngineNumber != null" >#{item.tEngineNumber,jdbcType=VARCHAR},</if>
+            <if test="item.tLicencePlate != null" >#{item.tLicencePlate,jdbcType=VARCHAR},</if>
+            <if test="item.tRecordDate != null" >#{item.tRecordDate,jdbcType=VARCHAR},</if>
+            <if test="item.tractionVehicleid != null" >#{item.tractionVehicleid,jdbcType=VARCHAR},</if>
+            <if test="item.automobileBrand != null" >#{item.automobileBrand,jdbcType=VARCHAR},</if>
+            <if test="item.loadCapacity != null" >#{item.loadCapacity,jdbcType=VARCHAR},</if>
+            <if test="item.curbWeight != null" >#{item.curbWeight,jdbcType=VARCHAR},</if>
+            <if test="item.tTotalMass != null" >#{item.tTotalMass,jdbcType=VARCHAR},</if>
+            <if test="item.tCurbWeight != null" >#{item.tCurbWeight,jdbcType=VARCHAR},</if>
+            <if test="item.trailerVehicleid != null" >#{item.trailerVehicleid,jdbcType=VARCHAR},</if>
+            <if test="item.vehicleDimension != null" >#{item.vehicleDimension,jdbcType=VARCHAR},</if>
+            <if test="item.weightLimt != null" >#{item.weightLimt,jdbcType=VARCHAR},</if>
+            <if test="item.vlLimitText != null" >#{item.vlLimitText,jdbcType=VARCHAR},</if>
+            <if test="item.imgPath != null" >#{item.imgPath,jdbcType=VARCHAR},</if>
+            </trim>
+            COMMIT;
+            ON conflict (checkid) DO UPDATE SET
+            <trim suffixOverrides=",">
+            <if test="item.plateNumber != null" >plate_number = #{item.plateNumber,jdbcType=VARCHAR},</if>
+            <if test="item.address != null" >address = #{item.address,jdbcType=VARCHAR},</if>
+            <if test="item.openingDate != null" >opening_date = #{item.openingDate,jdbcType=VARCHAR},</if>
+            <if test="item.brandModel != null" >brand_model= #{item.brandModel,jdbcType=VARCHAR},</if>
+            <if test="item.vehicleType != null" >vehicle_type= #{item.vehicleType,jdbcType=VARCHAR},</if>
+            <if test="item.owner != null" >owner= #{item.owner,jdbcType=VARCHAR},</if>
+            <if test="item.function != null" >function= #{item.function,jdbcType=VARCHAR},</if>
+            <if test="item.engineNumber != null" >engine_number= #{item.engineNumber,jdbcType=VARCHAR},</if>
+            <if test="item.licencePlate != null" >licence_plate= #{item.licencePlate,jdbcType=VARCHAR},</if>
+            <if test="item.recordDate != null" >record_date= #{item.recordDate,jdbcType=VARCHAR},</if>
+            <if test="item.trailerDimension != null" >trailer_dimension= #{item.trailerDimension,jdbcType=VARCHAR},</if>
+            <if test="item.tPlateNumber != null" >t_plate_number= #{item.tPlateNumber,jdbcType=VARCHAR},</if>
+            <if test="item.tAddress != null" >t_address= #{item.tAddress,jdbcType=VARCHAR},</if>
+            <if test="item.tOpeningDate != null" >t_opening_date= #{item.tOpeningDate,jdbcType=VARCHAR},</if>
+            <if test="item.tBrandModel != null" >t_brand_model= #{item.tBrandModel,jdbcType=VARCHAR},</if>
+            <if test="item.tVehicleType != null" >t_vehicle_type= #{item.tVehicleType,jdbcType=VARCHAR},</if>
+            <if test="item.tOwner != null" >t_owner= #{item.tOwner,jdbcType=VARCHAR},</if>
+            <if test="item.tFunction != null" >t_function= #{item.tFunction,jdbcType=VARCHAR},</if>
+            <if test="item.tEngineNumber != null" >t_engine_number= #{item.tEngineNumber,jdbcType=VARCHAR},</if>
+            <if test="item.tLicencePlate != null" >t_licence_plate= #{item.tLicencePlate,jdbcType=VARCHAR},</if>
+            <if test="item.tRecordDate != null" >t_record_date= #{item.tRecordDate,jdbcType=VARCHAR},</if>
+            <if test="item.tractionVehicleid != null" >traction_vehicleid= #{item.tractionVehicleid,jdbcType=VARCHAR},</if>
+            <if test="item.automobileBrand != null" >automobile_brand= #{item.automobileBrand,jdbcType=VARCHAR},</if>
+            <if test="item.loadCapacity != null" >load_capacity= #{item.loadCapacity,jdbcType=VARCHAR},</if>
+            <if test="item.curbWeight != null" >curb_weight= #{item.curbWeight,jdbcType=VARCHAR},</if>
+            <if test="item.tTotalMass != null" >t_total_mass= #{item.tTotalMass,jdbcType=VARCHAR},</if>
+            <if test="item.tCurbWeight != null" >t_curb_weight= #{item.tCurbWeight,jdbcType=VARCHAR},</if>
+            <if test="item.trailerVehicleid != null" >trailer_vehicleid= #{item.trailerVehicleid,jdbcType=VARCHAR},</if>
+            <if test="item.vehicleDimension != null" >vehicle_dimension= #{item.vehicleDimension,jdbcType=VARCHAR},</if>
+            <if test="item.weightLimt != null" >weight_limt= #{item.weightLimt,jdbcType=VARCHAR},</if>
+            <if test="item.vlLimitText != null" >vl_limit_text= #{item.vlLimitText,jdbcType=VARCHAR},</if>
+            <if test="item.imgPath != null" >img_path= #{item.imgPath,jdbcType=VARCHAR},</if>
+            </trim>
+            COMMIT;
+        </foreach>
+    </insert>
+</mapper>

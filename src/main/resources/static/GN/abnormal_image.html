@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>异常图片列表</title>
+  <script src="../script/ajax.js"></script>
+  <script src="../script/jquery.min.js"></script>
+  <script src="../script/vue.js"></script>
+  <script src="../script/axios.min.js"></script>
+  <script src="../script/url.js"></script>
+<link rel="icon" href="favicon.ico" type="image/ico">
+<meta name="keywords" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+<meta name="description" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+<meta name="author" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/materialdesignicons.min.css" rel="stylesheet">
+<link href="css/style.min.css" rel="stylesheet">
+  <style>
+    .tv {
+      display: none;
+    }
+    .tv2 {
+    }
+  </style>
+</head>
+  
+<body id="body">
+
+<div>
+  <div>
+    <!--左侧导航-->
+    <aside class="lyear-layout-sidebar">
+
+      <!-- logo -->
+      <div id="logo" class="sidebar-header">
+        <a onclick=jump("index.html?color=")><img src="images/logo-sidebar.png" width="45px" title="LightYear" alt="LightYear" /></a>
+      </div>
+      <div class="lyear-layout-sidebar-scroll">
+
+        <nav class="sidebar-main">
+          <ul class="nav nav-drawer">
+            <li> <a onclick=jump("data_download.html?color=")><i class="mdi mdi-home"></i>数据下载</a> </li>
+            <li class="nav-item active"><a onclick=jump("abnormal_image.html?color=")><i class="mdi mdi-format-align-justify"></i>可疑车辆</a></li>
+            <li class="nav-item nav-item-has-subnav">
+              <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i>手动处理图片</a>
+              <ul class="nav nav-subnav">
+                <li> <a onclick=jump("exception_list.html?color=")>异常图片列表</a> </li>
+                <li> <a onclick=jump("manually_modify.html?color=")>手动处理</a> </li>
+              </ul>
+            </li>
+            <li><a onclick=jump("image_identification.html?color=")><i class="mdi mdi-palette"></i>图像识别</a> </li>
+          </ul>
+        </nav>
+      </div>
+
+    </aside>
+    <!--End 左侧导航-->
+
+    <!--头部信息-->
+    <header class="lyear-layout-header">
+
+      <nav class="navbar navbar-default">
+        <div class="topbar">
+
+          <div class="topbar-left">
+            <div class="lyear-aside-toggler">
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+            </div>
+            <span class="navbar-page-title">可疑车辆</span>
+          </div>
+
+          <ul class="topbar-right">
+            <!--切换主题配色-->
+            <li class="dropdown dropdown-skin">
+              <span data-toggle="dropdown" class="icon-palette"><i class="mdi mdi-palette"></i></span>
+              <ul class="dropdown-menu dropdown-menu-right" data-stopPropagation="true">
+                <li class="drop-title"><p>主题</p></li>
+                <li class="drop-skin-li clearfix">
+                  <span class="inverse">
+                    <input onclick="getTheme('default')" type="radio" name="site_theme" value="default" id="site_theme_1" checked>
+                    <label for="site_theme_1"></label>
+                  </span>
+                  <span>
+                    <input onclick="getTheme('dark')" type="radio" name="site_theme" value="dark" id="site_theme_2">
+                    <label for="site_theme_2"></label>
+                  </span>
+                  <span>
+                    <input onclick="getTheme('translucent')" type="radio" name="site_theme" value="translucent" id="site_theme_3">
+                    <label for="site_theme_3"></label>
+                  </span>
+                </li>
+              </ul>
+            </li>
+            <!--切换主题配色-->
+          </ul>
+
+        </div>
+      </nav>
+
+    </header>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body" id="app">
+                <div class="btn-group">
+                  <button id="button" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    导出类型选择 <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a @click="changeTypeId(1)">“仅可用于运送不可拆解物体”大件运输车辆假冒绿色通道嫌疑的真假证记录</a></li>
+                    <li><a @click="changeTypeId(2)">“仅可用于运送不可拆解物体”大件运输车的绿色通道记录</a></li>
+                    <li><a @click="changeTypeId(3)">同个挂车车牌总质量不一致</a></li>
+                    <li><a @click="changeTypeId(4)">宽度大于等于3000mm但无“仅可用于运送不可拆解物体”字样</a></li>
+                    <li><a @click="changeTypeId(5)">车尾车牌与行驶证不符</a></li>
+                  </ul>
+                </div><br><br>
+                <div class="table-responsive">
+                  <table class="table table-bordered" style="white-space: nowrap">
+                    <thead>
+                      <tr>
+                        <th>查验编号</th>
+                        <th>登记车牌（牵引车车牌）</th>
+                        <th>挂车车牌</th>
+                        <th id="tv" style="display: none">挂车车牌（车尾照）</th>
+                        <th>入口站名称</th>
+                        <th>出口路段</th>
+                        <th>出口站名称</th>
+                        <th>查验开始时间</th>
+                        <th>运输货物品种</th>
+                        <th>查验结果</th>
+                        <th>车型</th>
+                        <th>车种</th>
+                        <th>应收金额（元）</th>
+                        <th>申报电话</th>
+                        <th>备注</th>
+                        <th>牵引车号牌号码（识别）</th>
+                        <th>牵引车车辆类型</th>
+                        <th>牵引车所有人</th>
+                        <th>牵引车住址</th>
+                        <th>牵引车使用性质</th>
+                        <th>牵引车品牌型号</th>
+                        <th>牵引车车辆识别代号</th>
+                        <th>牵引车发动机号码</th>
+                        <th>牵引车注册日期</th>
+                        <th>牵引车发证日期</th>
+                        <th>牵引车整备质量</th>
+                        <th>牵引车轮廓尺寸</th>
+                        <th>挂车车辆类型</th>
+                        <th>挂车所有人</th>
+                        <th>挂车住址</th>
+                        <th>挂车使用性质</th>
+                        <th>挂车品牌型号</th>
+                        <th>挂车车辆识别代号</th>
+                        <th>挂车注册日期</th>
+                        <th>挂车发证日期</th>
+                        <th>挂车核定载质量</th>
+                        <th>挂车总质量</th>
+                        <th>挂车整备质量</th>
+                        <th>挂车轮廓尺寸</th>
+                        <th>图片地址</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tv3">
+                  <tr v-for="list in exportList">
+                    <td>{{list.checkid}}</td>
+                    <td>{{list.vehicleid}}</td>
+                    <td>{{list.tlicencePlate}}</td>
+                    <td>{{list.enstationname}}</td>
+                    <td>{{list.roadname}}</td>
+                    <td>{{list.exstationname}}</td>
+                    <td>{{list.checktime}}</td>
+                    <td>{{list.freighttypes}}</td>
+                    <td>{{list.checkresult}}</td>
+                    <td>{{list.vehicletype}}</td>
+                    <td>{{list.vehicleclass}}</td>
+                    <td>{{list.calculationfeeStr}}</td>
+                    <td>{{list.sourcedrivertelephone}}</td>
+                    <td>{{list.vL_limit_text}}</td>
+                    <td>{{list.licencePlate}}</td>
+                    <td>{{list.vehicleTypeNew}}</td>
+                    <td>{{list.owner}}</td>
+                    <td>{{list.address}}</td>
+                    <td>{{list.function}}</td>
+                    <td>{{list.brandModel}}</td>
+                    <td>{{list.plateNumber}}</td>
+                    <td>{{list.engineNumber}}</td>
+                    <td>{{list.recordDate}}</td>
+                    <td>{{list.openingDate}}</td>
+                    <td>{{list.curbWeight}}</td>
+                    <td>{{list.vehicleDimension}}</td>
+                    <td>{{list.tvehicleType}}</td>
+                    <td>{{list.towner}}</td>
+                    <td>{{list.taddress}}</td>
+                    <td>{{list.tfunction}}</td>
+                    <td>{{list.tbrandModel}}</td>
+                    <td>{{list.tplateNumber}}</td>
+                    <td>{{list.trecordDate}}</td>
+                    <td>{{list.topeningDate}}</td>
+                    <td>{{list.loadCapacity}}</td>
+                    <td>{{list.ttotalMass}}</td>
+                    <td>{{list.tcurbWeight}}</td>
+                    <td>{{list.trailerDimension}}</td>
+                    <td>{{list.imgPath}}</td>
+                  </tr>
+                  </tbody>
+                    <tbody id="tv2" style="display: none">
+                      <tr v-for="list in exportList">
+                        <td>{{list.checkid}}</td>
+                        <td>{{list.vehicleid}}</td>
+                        <td>{{list.tlicencePlate}}</td>
+                        <td>{{list.trailerVehicleid}}</td>
+                        <td>{{list.enstationname}}</td>
+                        <td>{{list.roadname}}</td>
+                        <td>{{list.exstationname}}</td>
+                        <td>{{list.checktime}}</td>
+                        <td>{{list.freighttypes}}</td>
+                        <td>{{list.checkresult}}</td>
+                        <td>{{list.vehicletype}}</td>
+                        <td>{{list.vehicleclass}}</td>
+                        <td>{{list.calculationfeeStr}}</td>
+                        <td>{{list.sourcedrivertelephone}}</td>
+                        <td>{{list.vL_limit_text}}</td>
+                        <td>{{list.licencePlate}}</td>
+                        <td>{{list.vehicleTypeNew}}</td>
+                        <td>{{list.owner}}</td>
+                        <td>{{list.address}}</td>
+                        <td>{{list.function}}</td>
+                        <td>{{list.brandModel}}</td>
+                        <td>{{list.plateNumber}}</td>
+                        <td>{{list.engineNumber}}</td>
+                        <td>{{list.recordDate}}</td>
+                        <td>{{list.openingDate}}</td>
+                        <td>{{list.curbWeight}}</td>
+                        <td>{{list.vehicleDimension}}</td>
+                        <td>{{list.tvehicleType}}</td>
+                        <td>{{list.towner}}</td>
+                        <td>{{list.taddress}}</td>
+                        <td>{{list.tfunction}}</td>
+                        <td>{{list.tbrandModel}}</td>
+                        <td>{{list.tplateNumber}}</td>
+                        <td>{{list.trecordDate}}</td>
+                        <td>{{list.topeningDate}}</td>
+                        <td>{{list.loadCapacity}}</td>
+                        <td>{{list.ttotalMass}}</td>
+                        <td>{{list.tcurbWeight}}</td>
+                        <td>{{list.trailerDimension}}</td>
+                        <td>{{list.imgPath}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <ul class="pagination">
+                  <li id="l1"><span @click="changeUp">«</span></li>
+                  <li><a>{{ye}}</a></li>
+                  <li><a>{{sun}}</a></li>
+                  <li id="l11"><span @click="changeDown">»</span></li>
+                  <button title="下载异常数据" class="btn btn-default" onclick="getS()"><img style="width: 20px" src="images/download.png"></button>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="js/main.min.js"></script>
+<script type="text/javascript">
+$(function(){
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+});
+</script>
+</body>
+<script type="text/javascript">
+  var y = 1;
+  var sun = 0;
+  var typeId=0;
+  var color = 'default';
+
+  function jump(url){
+    window.location.href=url+color;
+  }
+
+  function getS(){
+    if (typeId==0){
+      alert("先选择可疑车辆类型");
+    }else if(typeId==1){
+      window.location.href=fwqURL+"50//outPutExcel?typeId="+typeId;
+      typeId=6;
+      alert("开始下载，请稍后！");
+    }else if(typeId==2){
+      window.location.href=fwqURL+"50//outPutExcel?typeId="+typeId;
+      typeId=6;
+      alert("开始下载，请稍后！");
+    }else if(typeId==3){
+      window.location.href=fwqURL+"50//outPutExcel?typeId="+typeId;
+      typeId=6;
+      alert("开始下载，请稍后！");
+    }else if(typeId==4){
+      window.location.href=fwqURL+"50//outPutExcel?typeId="+typeId;
+      typeId=6;
+      alert("开始下载，请稍后！");
+    }else if(typeId==5){
+      window.location.href=fwqURL+"50//outPutExcel?typeId="+typeId;
+      typeId=6;
+      alert("开始下载，请稍后！");
+    }else if (typeId==6){
+      alert("请勿重复下载。");
+    }
+  }
+
+  function getId(key) {
+    var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) {
+      return unescape(r[2]);
+    }
+    return null;
+  }
+
+  var config = {
+    el: "#app",
+    data: {
+      exportList:[],
+      ye:'第1页',
+      sun:'共0页'
+    },
+    mounted:function (){
+      color = getId("color");
+      $("#body").attr("data-theme",color);
+
+    },
+    methods:{
+      changeTypeId(id){
+        typeId=id;
+
+        y=1;
+        vue.$data.ye='第'+y+'页';
+
+        document.getElementById("tv").style.display = "none";
+        document.getElementById("tv2").style.display = "none";
+        document.getElementById("tv3").style.display = "";
+        if (id==1){
+          document.getElementById("button").innerHTML="“仅可用于运送不可拆解物体”大件运输车辆假冒绿色通道嫌疑的真假证记录";
+        }else if (id==2){
+          document.getElementById("button").innerHTML="“仅可用于运送不可拆解物体”大件运输车的绿色通道记录";
+        }else if (id==3){
+          document.getElementById("button").innerHTML="同个挂车车牌总质量不一致";
+        }else if (id==4){
+          document.getElementById("button").innerHTML="宽度大于等于3000mm但无“仅可用于运送不可拆解物体”字样";
+        }else if (id==5){
+          document.getElementById("tv3").style.display = "none";
+          document.getElementById("button").innerHTML="车尾车牌与行驶证不符";
+          document.getElementById("tv").style.display = "";
+          document.getElementById("tv2").style.display = "";
+        }
+        vue.$data.sun='共0页';
+        this.changePage();
+        this.countExport();
+      },
+      changeUp(){
+        if (y===1){
+          alert("已经是第一页了");
+          return;
+        }
+
+        y=y-1;
+        vue.$data.ye='第'+y+'页';
+
+        this.changePage();
+      },
+      changeDown(){
+        if (sun===y){
+          alert("已经是最后一页了");
+          return;
+        }
+
+        y=y+1;
+        vue.$data.ye='第'+y+'页';
+
+        this.changePage();
+      },
+      changePage(){
+        vue.$data.exportList=null;
+        var serverUrl=fwqURL+"50//selectExport?pagination="+y+"&typeId="+typeId;
+        axios.get(serverUrl)
+                .then(function(res){
+                  var result=res.data;
+                  // console.log(result)
+                  this.vue.exportList=result;
+                })
+                .catch();
+      },
+      countExport(){
+        var serverUrl=fwqURL+"50//countExport?&typeId="+typeId;
+        axios.get(serverUrl)
+                .then(function(res){
+                  sun=res.data;
+                  this.vue.sun='共'+sun+'页';
+                })
+                .catch();
+      }
+    }
+  }
+  var vue=new Vue(config);
+
+</script>
+</html>

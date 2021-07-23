@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>人眼识别</title>
+  <script src="../script/ajax.js"></script>
+  <script src="../script/jquery.min.js"></script>
+  <script src="../script/vue.js"></script>
+  <script src="../script/axios.min.js"></script>
+  <script src="../script/url.js"></script>
+<link rel="icon" href="favicon.ico" type="image/ico">
+  <meta name="keywords" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+  <meta name="description" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+  <meta name="author" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/materialdesignicons.min.css" rel="stylesheet">
+<!--标签插件-->
+<link rel="stylesheet" href="js/jquery-tags-input/jquery.tagsinput.min.css">
+<link href="css/style.min.css" rel="stylesheet">
+</head>
+
+<body id="body">
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <aside class="lyear-layout-sidebar">
+
+      <!-- logo -->
+      <div id="logo" class="sidebar-header">
+        <a onclick=jump("index.html?color=")><img src="images/logo-sidebar.png" width="45px" title="LightYear" alt="LightYear" /></a>
+      </div>
+      <div class="lyear-layout-sidebar-scroll">
+
+        <nav class="sidebar-main">
+          <ul class="nav nav-drawer">
+            <li> <a onclick=jump("data_download.html?color=")><i class="mdi mdi-home"></i>数据下载</a> </li>
+            <li><a onclick=jump("abnormal_image.html?color=")><i class="mdi mdi-format-align-justify"></i>可疑车辆</a></li>
+            <li class="nav-item nav-item-has-subnav">
+              <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i>手动处理图片</a>
+              <ul class="nav nav-subnav">
+                <li> <a onclick=jump("exception_list.html?color=")>异常图片列表</a> </li>
+                <li> <a onclick=jump("manually_modify.html?color=")>手动处理</a> </li>
+              </ul>
+            </li>
+            <li><a onclick=jump("image_identification.html?color=")><i class="mdi mdi-palette"></i>图像识别</a> </li>
+          </ul>
+        </nav>
+      </div>
+
+    </aside>
+    <!--End 左侧导航-->
+
+    <!--头部信息-->
+    <header class="lyear-layout-header">
+
+      <nav class="navbar navbar-default">
+        <div class="topbar">
+
+          <div class="topbar-left">
+            <div class="lyear-aside-toggler">
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+            </div>
+            <span class="navbar-page-title">手动处理图片 - 手动处理</span>
+          </div>
+
+          <ul class="topbar-right">
+            <!--切换主题配色-->
+            <li class="dropdown dropdown-skin">
+              <span data-toggle="dropdown" class="icon-palette"><i class="mdi mdi-palette"></i></span>
+              <ul class="dropdown-menu dropdown-menu-right" data-stopPropagation="true">
+                <li class="drop-title"><p>主题</p></li>
+                <li class="drop-skin-li clearfix">
+                  <span class="inverse">
+                    <input onclick="getTheme('default')" type="radio" name="site_theme" value="default" id="site_theme_1" checked>
+                    <label for="site_theme_1"></label>
+                  </span>
+                  <span>
+                    <input onclick="getTheme('dark')" type="radio" name="site_theme" value="dark" id="site_theme_2">
+                    <label for="site_theme_2"></label>
+                  </span>
+                  <span>
+                    <input onclick="getTheme('translucent')" type="radio" name="site_theme" value="translucent" id="site_theme_3">
+                    <label for="site_theme_3"></label>
+                  </span>
+                </li>
+              </ul>
+            </li>
+            <!--切换主题配色-->
+          </ul>
+
+        </div>
+      </nav>
+
+    </header>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <div style="text-align: center">
+                  <img id="photo" src="../高清原图.jpg" />
+                </div>
+                <form action="#!" id="form1" method="post" class="row" style="display: none">
+                  <div class="form-group col-md-12">
+                    <label for="pLicencePlate">车辆号牌号码：</label>
+                    <input style="display:inline;width: 100px" type="text" class="form-control" id="pLicencePlate" name="licencePlate" placeholder="粤A12345" autofocus>
+                  </div>
+                </form>
+                <form action="#!" id="form2" method="post" class="row">
+                  <div class="form-group col-md-12">
+                    <label style="font-size:20px">牵引车信息：</label><br>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="licencePlate">牵引车号牌号码：</label>
+                    <input style="display:inline;width: 100px" id="licencePlate" class="form-control" name="licencePlate" type="text" placeholder="粤A12345" autofocus>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="curbWeight">牵引车整备质量：</label>
+                    <input style="display:inline;width: 100px" id="curbWeight" class="form-control" name="curbWeight" type="text" placeholder="12345kg">
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="vehicleDimension">牵引车尺寸：</label>
+                    <input style="display:inline;width: 180px" id="vehicleDimension" class="form-control" name="vehicleDimension" type="text" placeholder="6860x2550x3950mm">
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label style="font-size:20px">挂车信息：</label><br>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="tLicencePlate">挂车号牌号码：</label>
+                    <input style="display:inline;width: 100px" id="tLicencePlate" class="form-control" name="tLicencePlate" type="text" placeholder="粤A1234挂">
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="tCurbWeight">挂车整备质量：</label>
+                    <input style="display:inline;width: 100px" id="tCurbWeight" class="form-control" name="tCurbWeight" type="text" placeholder="12345kg">
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="tTotalMass">挂车总质量：</label>
+                    <input style="display:inline;width: 100px" id="tTotalMass" class="form-control" name="tTotalMass" type="text" placeholder="12345kg">
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="loadCapacity">挂车核定载质量：</label>
+                    <input style="display:inline;width: 100px" id="loadCapacity" class="form-control" name="loadCapacity" type="text" placeholder="12345kg">
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="trailerDimension">挂车尺寸：</label>
+                    <input style="display:inline;width: 180px" id="trailerDimension" class="form-control" name="trailerDimension" type="text" placeholder="6860x2550x3950mm">
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label>挂车是否仅可用于运送不可拆解物体</label>
+                    <div class="clearfix">
+                      <label class="lyear-radio radio-inline radio-primary">
+                        <input id="radio1" name="Fruit" type="radio" value="yes"><span>是</span>
+                      </label>
+                      <label class="lyear-radio radio-inline radio-primary">
+                        <input id="radio2" name="Fruit" type="radio" value="no"><span>否</span>
+                      </label>
+                    </div>
+                  </div>
+                </form>
+                <div class="card-body">
+                  <button class="btn btn-primary" onclick="updateImage()">确认修改</button>
+                  <button class="btn btn-default" onclick="backTo()">返 回</button>
+                  <button class="btn btn-danger" onclick="updateImageNo()">图片无法识别</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+<!--标签插件-->
+<script src="js/jquery-tags-input/jquery.tagsinput.min.js"></script>
+<script type="text/javascript" src="js/main.min.js"></script>
+</body>
+<script>
+  var id = null;
+  var number = null;
+  var checkid = null;
+  var color = 'default';
+
+  function jump(url){
+    window.location.href=url+color;
+  }
+
+  function getId(key) {
+    var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) {
+      return unescape(r[2]);
+    }
+    return null;
+  }
+
+  window.onload = function(){
+    id = getId("id");
+    number = getId("number");
+    color = getId("color");
+
+    $("#body").attr("data-theme",color);
+
+    $.ajax({
+      type : "get",
+      url: fwqURL+"50//getImageData?id="+id,
+      contentType: false,
+      processData: false,
+      success: function (result) {
+        checkid=result.checkid;
+        if (number==13){
+          document.getElementById("licencePlate").value=result.licencePlate;
+          document.getElementById("curbWeight").value=result.curbWeight;
+          document.getElementById("vehicleDimension").value=result.vehicleDimension;
+          document.getElementById("tLicencePlate").value=result.tLicencePlate;
+          document.getElementById("tCurbWeight").value=result.tCurbWeight;
+          document.getElementById("tTotalMass").value=result.tTotalMass;
+          document.getElementById("loadCapacity").value=result.loadCapacity;
+          document.getElementById("trailerDimension").value=result.trailerDimension;
+          if (result.vlLimitText=="仅可用于运送不可拆解物体"){
+            document.getElementById("radio1").checked = true;
+          }else {
+            document.getElementById("radio2").checked = true;
+          }
+        }else if (number==11){
+          document.getElementById("form1").style.display='inline-block'
+          document.getElementById("form2").style.display='none'
+          document.getElementById("licencePlate").value=result.tractionVehicleid;
+        }else if (number==12){
+          document.getElementById("form1").style.display='inline-block'
+          document.getElementById("form2").style.display='none'
+          document.getElementById("licencePlate").value=result.trailerVehicleid;
+        }
+        document.getElementById("photo").src="http://192.168.10.108:8080/"+result.address;
+      }
+    });
+  }
+
+  function updateImage(){
+    if (number==13){
+      var licencePlate = $("#licencePlate").val()
+      var formData = new FormData;
+      formData.append("Id",id);
+      formData.append("checkid",checkid);
+      formData.append("licencePlate",$("#licencePlate").val());
+      formData.append("curbWeight",$("#curbWeight").val());
+      formData.append("vehicleDimension",$("#vehicleDimension").val());
+      formData.append("tLicencePlate",$("#tLicencePlate").val());
+      formData.append("tCurbWeight",$("#tCurbWeight").val());
+      formData.append("tTotalMass",$("#tTotalMass").val());
+      formData.append("loadCapacity",$("#loadCapacity").val());
+      formData.append("trailerDimension",$("#trailerDimension").val());
+      if (document.getElementById("radio1").checked==false){
+        formData.append("vlLimitText","空");
+      }else {
+        formData.append("vlLimitText","仅可用于运送不可拆解物体");
+      }
+
+      if (licencePlate == null || licencePlate == undefined){
+        alert("车辆号牌号码不能为空");
+        return false;
+      }else if (licencePlate.length!=7){
+        alert("车辆号牌号码不正确");
+        return false;
+      }
+      $.ajax({
+        type : "post",
+        url: fwqURL+"50//updateImage/",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (result) {
+          alert(result);
+        }
+      });
+    }else {
+      var formData = new FormData;
+      formData.append("Id", id);
+      formData.append("checkid",checkid);
+      var licencePlate = $("#pLicencePlate").val()
+      if (number == 11) {
+        formData.append("tractionVehicleid", licencePlate);
+      } else if (number == 12) {
+        formData.append("trailerVehicleid", licencePlate);
+      }
+
+      if (licencePlate == null || licencePlate == undefined) {
+        alert("车辆号牌号码不能为空");
+        return false;
+      } else if (licencePlate.length != 7) {
+        alert("车辆号牌号码不正确");
+        return false;
+      }
+
+      $.ajax({
+        type: "post",
+        url: fwqURL + "50//updateImage/",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (result) {
+          alert(result);
+        }
+      });
+    }
+  }
+
+  function updateImageNo(){
+    $.ajax({
+      type : "post",
+      url: fwqURL+"50//updateImageNo?id="+id,
+      contentType: false,
+      processData: false,
+      success: function (result) {
+        alert(result);
+        window.history.go(-1);
+        window.location.href = document.referrer;
+      }
+    });
+
+  }
+
+  function backTo(){
+    window.history.go(-1);
+
+  }
+</script>
+</html>

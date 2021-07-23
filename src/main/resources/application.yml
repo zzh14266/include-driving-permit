@@ -1,0 +1,67 @@
+# server
+server:
+  devtools:
+    restart:
+      enabled: true  #设置开启热部署
+      additional-paths: src/main/java #重启目录
+  port: 8850
+  servlet:
+    context-path: /
+  address: 0.0.0.0
+# spring
+spring:
+  datasource:
+    url: jdbc:postgresql://192.168.10.108:5433/greenlanecheckdata?currentSchema=sys&stringtype=unspecified&reWriteBatchedInserts=true
+    username: postgres
+    password: sa123
+    platform: POSTGRESQL
+    hikari:
+      max-lifetime: 864000000
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/pages/
+    suffix: .html
+  aop:
+    proxy-target-class: false  #false 表示jdk代理,默认为true
+  servlet:
+    multipart:
+      max-file-size: 400MB
+      max-request-size: 400MB
+
+#mybatis-plus
+mybatis-plus:
+  #别名包定义 Mapper的resultType中只需要写类名 之后自动拼接即可
+  type-aliases-package: com.turingit.drivingLicense.pojo
+  #加载指定的xml映射文件
+  mapper-locations: classpath:/mapper/*.xml
+  #开启驼峰映射
+  configuration:
+    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl    #查看sql语句开关
+
+#mybatis
+mybatis:
+  #配置SQL映射文件路径
+  mapper-locations: classpsth:/mapper/*.xml
+  #配置别名
+  type-aliases-package: com.turingit.drivingLicense.pojo
+  #驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+
+# log
+logging:
+  level:
+    com.cy: debug
+  file:
+    path: d:/dblogs/
+
+pic:
+  webPath: /images/
+  savePath: D:/photo/driving-license
+
+ak:
+  ak: KXgmUxC5DMzeunVerFu7Gpy1
+
+sk:
+  sk: t3gV2kdb59H51lpRsryff1buOA05MX3w

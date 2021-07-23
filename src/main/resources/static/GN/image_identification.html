@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>神奇的图片处理按钮</title>
+  <script src="../script/ajax.js"></script>
+  <script src="../script/jquery.min.js"></script>
+  <script src="../script/vue.js"></script>
+  <script src="../script/axios.min.js"></script>
+  <script src="../script/url.js"></script>
+<link rel="icon" href="favicon.ico" type="image/ico">
+  <meta name="keywords" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+  <meta name="description" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+  <meta name="author" content="妈妈告诉我名字起的长一点容易被人记住，所以网页的信息也是如此。">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/materialdesignicons.min.css" rel="stylesheet">
+<!--时间选择插件-->
+<link rel="stylesheet" href="js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+<!--日期选择插件-->
+<link rel="stylesheet" href="js/bootstrap-datepicker/bootstrap-datepicker3.min.css">
+<link href="css/style.min.css" rel="stylesheet">
+</head>
+
+<body id="body">
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <aside class="lyear-layout-sidebar">
+
+      <!-- logo -->
+      <div id="logo" class="sidebar-header">
+        <a onclick=jump("index.html?color=")><img src="images/logo-sidebar.png" width="54px" title="LightYear" alt="LightYear" /></a>
+      </div>
+      <div class="lyear-layout-sidebar-scroll">
+
+        <nav class="sidebar-main">
+          <ul class="nav nav-drawer">
+            <li><a onclick=jump("data_download.html?color=")><i class="mdi mdi-home"></i>数据下载</a> </li>
+            <li><a onclick=jump("abnormal_image.html?color=")><i class="mdi mdi-format-align-justify"></i>可疑车辆</a></li>
+            <li class="nav-item nav-item-has-subnav">
+              <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i>手动处理图片</a>
+              <ul class="nav nav-subnav">
+                <li> <a onclick=jump("exception_list.html?color=")>异常图片列表</a> </li>
+                <li> <a onclick=jump("manually_modify.html?color=")>手动处理</a> </li>
+              </ul>
+            </li>
+            <li class="nav-item active"><a onclick=jump("image_identification.html?color=")><i class="mdi mdi-palette"></i>图像识别</a> </li>
+          </ul>
+        </nav>
+      </div>
+
+    </aside>
+    <!--End 左侧导航-->
+
+    <!--头部信息-->
+    <header class="lyear-layout-header">
+
+      <nav class="navbar navbar-default">
+        <div class="topbar">
+
+          <div class="topbar-left">
+            <div class="lyear-aside-toggler">
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+            </div>
+            <span class="navbar-page-title">图像识别</span>
+          </div>
+          <!--切换主题配色-->
+          <li class="dropdown dropdown-skin">
+            <span data-toggle="dropdown" class="icon-palette"><i class="mdi mdi-palette"></i></span>
+            <ul class="dropdown-menu dropdown-menu-right" data-stopPropagation="true">
+              <li class="drop-title"><p>主题</p></li>
+              <li class="drop-skin-li clearfix">
+                  <span class="inverse">
+                    <input onclick="getTheme('default')" type="radio" name="site_theme" value="default" id="site_theme_1" checked>
+                    <label for="site_theme_1"></label>
+                  </span>
+                <span>
+                    <input onclick="getTheme('dark')" type="radio" name="site_theme" value="dark" id="site_theme_2">
+                    <label for="site_theme_2"></label>
+                  </span>
+                <span>
+                    <input onclick="getTheme('translucent')" type="radio" name="site_theme" value="translucent" id="site_theme_3">
+                    <label for="site_theme_3"></label>
+                  </span>
+              </li>
+            </ul>
+          </li>
+          <!--切换主题配色-->
+        </div>
+      </nav>
+
+    </header>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-header"><h4>选择需要识别的时间段</h4></div>
+              <div class="card-body">
+                <div class="input-daterange input-group js-datepicker" data-auto-close="false" data-date-format="yyyy-mm-dd">
+                  <input id="st" class="form-control" type="text" name="example-daterange1" placeholder="从">
+                  <span class="input-group-addon"><i class="mdi mdi-chevron-right"></i></span>
+                  <input id="et" class="form-control" type="text" name="example-daterange2" placeholder="至">
+                </div>
+                <br>
+                <button style="display:block;margin:0 auto" class="btn btn-label btn-primary" onclick="record()"><label><i class="mdi mdi-checkbox-marked-circle-outline"></i></label>处理图片</button>
+              </div>
+              <div class="card-header">
+                <button class="btn btn-w-md btn-round btn-primary" onclick="mq()">获取识别进度</button>
+                <br>
+                <br>
+                <span id="mq">目前识别到了：0000-00-00 00:00:00</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+<!--时间选择插件-->
+<script src="js/bootstrap-datetimepicker/moment.min.js"></script>
+<script src="js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="js/bootstrap-datetimepicker/locale/zh-cn.js"></script>
+<!--日期选择插件-->
+<script src="js/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<script src="js/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+<script type="text/javascript" src="js/main.min.js"></script>
+</body>
+<script type="text/javascript">
+  var id = 46;
+  var color = 'default';
+
+  function jump(url){
+    window.location.href=url+color;
+  }
+
+  function getId(key) {
+    var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) {
+      return unescape(r[2]);
+    }
+    return null;
+  }
+
+  window.onload = function(){
+    color = getId("color");
+    $("#body").attr("data-theme",color);
+  }
+
+  function record(){
+
+    var st = null;
+    var et = null;
+    st=$("#st").val()+" 00:00:00";
+    et=$("#et").val()+" 00:00:00";
+
+    if (st==""||et==""){
+      return;
+    }
+
+    $.ajax({
+      type : "post",
+      url: fwqURL+id+"//SavePhotoUrl"+(id-45)+"?st="+st+"&et="+et+"&id="+id,
+      // url: fwqURL+50+"//SavePhotoUrl"+(id-45)+"?st="+st+"&et="+et+"&id="+id,
+      contentType: false,
+      processData: false,
+      success: function (result) {
+        alert(result);
+      }
+    });
+
+    if (id<55){
+      id=id+1;
+      record();
+    }else if (id==55){
+      alert("请稍后！")
+    }
+  }
+
+  function mq(){
+
+    $.ajax({
+      type : "get",
+      url: fwqURL+"50//mq",
+      contentType: false,
+      processData: false,
+      success: function (result) {
+        document.getElementById("mq").innerText="目前识别到了："+result;
+      }
+    });
+
+  }
+</script>
+</html>

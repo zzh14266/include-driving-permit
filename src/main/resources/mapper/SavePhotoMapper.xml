@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.turingit.drivingLicense.mapper.SavePhotoMapper">
+    <update id="updateImage" parameterType="java.util.List" >
+
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update public.imagedata2
+            <set>
+                <if test="item.abnormalImage != null" >
+                    abnormal_image = #{item.abnormalImage,jdbcType=VARCHAR},
+                </if>
+            </set>
+            where id = #{item.id,jdbcType=BIGINT}
+            COMMIT;
+        </foreach>
+    </update>
+
+    <select id="selectTime" resultType="com.turingit.drivingLicense.pojo.ImageData">
+        select id,abnormal_image,checkid,img_path,typename,checktime
+        from public.imagedata2
+        where checkid in (
+            SELECT checkid
+            FROM public.checkdata2
+            where checktime &gt;= #{st}and checktime &lt; #{et}
+        )
+        and abnormal_image is null
+        and (typename='行驶证' or typename='车头照' or typename='车尾照')
+    </select>
+</mapper>
