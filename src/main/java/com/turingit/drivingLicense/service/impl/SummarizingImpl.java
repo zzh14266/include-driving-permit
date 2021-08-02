@@ -28,12 +28,14 @@ public class SummarizingImpl implements SummarizingService {
     @Override
     public List<Export> selectExport(Integer pagination,Integer typeId) {
         pagination=pagination*10-10;
+
+
         List<Export> exports = null;
         if (typeId==1)exports = summarizingMapper.selectExport1(pagination);
         if (typeId==2)exports = summarizingMapper.selectExport2(pagination);
-        if (typeId==3)exports = summarizingMapper.selectExport3(pagination);
-        if (typeId==4)exports = summarizingMapper.selectExport4(pagination);
-        if (typeId==5)exports = summarizingMapper.selectExport5(pagination);
+//        if (typeId==3)exports = summarizingMapper.selectExport3(pagination);
+//        if (typeId==4)exports = summarizingMapper.selectExport4(pagination);
+//        if (typeId==5)exports = summarizingMapper.selectExport5(pagination);
         insertExport();
         return exports;
     }
@@ -43,9 +45,9 @@ public class SummarizingImpl implements SummarizingService {
         Integer count = null;
         if (typeId==1)count = summarizingMapper.countExport1();
         if (typeId==2)count = summarizingMapper.countExport2();
-        if (typeId==3)count = summarizingMapper.countExport3();
-        if (typeId==4)count = summarizingMapper.countExport4();
-        if (typeId==5)count = summarizingMapper.countExport5();
+//        if (typeId==3)count = summarizingMapper.countExport3();
+//        if (typeId==4)count = summarizingMapper.countExport4();
+//        if (typeId==5)count = summarizingMapper.countExport5();
 
         if (count%10==0){
             count=count/10;
@@ -431,14 +433,15 @@ public class SummarizingImpl implements SummarizingService {
 //        return null;
 //    }
 
+    /* 下载 */
     @Override
     public List<Export> getSumm(Integer typeId) {
         List<Export> exports = null;
-        if (typeId==1)exports = summarizingMapper.getS1();
-        if (typeId==2)exports = summarizingMapper.getS2();
-        if (typeId==3)exports = summarizingMapper.getS3();
-        if (typeId==4)exports = summarizingMapper.getS4();
-        if (typeId==5)exports = summarizingMapper.getS5();
+        if (typeId==1)exports = summarizingMapper.download1();
+        if (typeId==2)exports = summarizingMapper.download2();
+//        if (typeId==3)exports = summarizingMapper.getS3();
+//        if (typeId==4)exports = summarizingMapper.getS4();
+//        if (typeId==5)exports = summarizingMapper.getS5();
         return exports;
     }
 
@@ -464,7 +467,7 @@ public class SummarizingImpl implements SummarizingService {
             QueryWrapper<Export> queryWrapper = new QueryWrapper();
             queryWrapper.eq("checkid",objExport.getCheckid());
             Export export = exportMapper.selectOne(queryWrapper);
-            if (export.getCheckid().equals(objExport.getCheckid()) && export.getIsGenuineAndSham() == 0) {
+            if (export.getCheckid().equals(objExport.getCheckid()) && export.getIsOnlyUsed() == 0) {
                 export.setIsOnlyUsed(1);
                 exportMapper.updateById(export);
                 System.out.println("过滤一条车辆假冒绿色通道嫌疑的真假证记录");
