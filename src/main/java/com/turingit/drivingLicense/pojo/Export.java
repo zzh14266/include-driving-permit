@@ -1,12 +1,17 @@
 package com.turingit.drivingLicense.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+@TableName(autoResultMap = true, value = "export2",schema = "public")
 @Data
 @Accessors(chain=true)
 public class Export {
-
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     private String checkid;          //查验编号
     private String vehicleid;        //登记车牌
     private String tLicencePlate;    //挂车号牌号码（行驶证中的）
@@ -20,7 +25,7 @@ public class Export {
     private String vehicleclass;     //车种
     private String calculationfeeStr;//应收金额（元）
     private String sourcedrivertelephone;//申报电话
-    private String vL_limit_text;    //备注
+    private String vlLimitText;      //备注
     private String licencePlate;     //牵引车号牌号码（识别）
     private String vehicleTypeNew;   //牵引车车辆类型
     private String owner;            //前车所有人
@@ -47,4 +52,7 @@ public class Export {
     private String trailerDimension; //挂车尺寸
     private String imgPath;          //图片相对路径
     private String trailerVehicleid; //挂车车牌（车辆后方图片中的）
+
+    private Integer isGenuineAndSham; //“仅可用于运送不可拆解物体”大件运输车辆假冒绿色通道嫌疑的真假证记录
+    private Integer isOnlyUsed;     //“仅可用于运送不可拆解物体”大件运输车的绿色通道记录
 }

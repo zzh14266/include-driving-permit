@@ -1,10 +1,9 @@
 package com.turingit.drivingLicense.controller;
 
-import com.turingit.drivingLicense.baiduClass.SelectReturn;
 import com.turingit.drivingLicense.pojo.ImageData;
 import com.turingit.drivingLicense.pojo.Summarizing;
 import com.turingit.drivingLicense.service.SavePhotoService;
-import com.turingit.drivingLicense.service.SavePhotoService_old;
+import com.turingit.drivingLicense.service.impl.SummarizingImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +27,7 @@ public class SavePhotoController {
     }
 
     //处理某一日的图片
-    @RequestMapping("SavePhotoUrl1")
+    @RequestMapping("SavePhotoUrl")
     public String savePhotoUrl1(String st ,String et,int id) throws ParseException {
         return getString(st, et);
     }
@@ -118,7 +117,7 @@ public class SavePhotoController {
         if (!res.equals("保存成功")) return res;
 
         while (true){
-            st = time(st,20);
+            st = time(st,2);
 
             //比较时间
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -134,6 +133,7 @@ public class SavePhotoController {
             }
         }
         System.out.println("时间段："+a+"~"+et+"处理完成。");
+        new SummarizingImpl().insertExport();
         return res;
     }
 

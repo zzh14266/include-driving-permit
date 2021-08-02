@@ -3,8 +3,6 @@ package com.turingit;
 //import com.turingit.drivingLicense.ImageProcessing.Reset;
 //import com.turingit.drivingLicense.baiduClass.License;
 import com.turingit.drivingLicense.mapper.SummarizingMapper;
-import com.turingit.drivingLicense.pojo.Summarizing;
-import com.turingit.drivingLicense.service.SavePhotoService_old;
 import com.turingit.drivingLicense.service.SavePhotoService;
 import com.turingit.drivingLicense.service.SummarizingService;
 import com.turingit.drivingLicense.service.impl.SummarizingImpl;

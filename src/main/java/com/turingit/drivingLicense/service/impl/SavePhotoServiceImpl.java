@@ -63,14 +63,14 @@ public class SavePhotoServiceImpl implements SavePhotoService {
 
             Summarizing summarizing = new Summarizing();
 
-            if (imageData.getAbnormalImage()!=null){
+            if (imageData.getAbnormalImage() != 0){
                 System.out.println("图片已被处理");
                 continue;
             }
 
             summarizing.setCheckid(imageData.getCheckid());
 
-            imageData.setAbnormalImage("图片处理完成");
+            imageData.setAbnormalImage(1);
 
             String a = imageData.getImgPath();
             a = a.replaceAll(" ", "_");
@@ -81,8 +81,8 @@ public class SavePhotoServiceImpl implements SavePhotoService {
             fileUrl = fileUrl.replaceAll("/", "\\\\");
 
             //文件类型
-            String fileName = imageData.getTypename();
-            if (fileName.equals("行驶证")){
+            Integer nTypeID = imageData.getTypeid();
+            if (nTypeID == 13){
                 summarizing.setImgPath(imageData.getImgPath());
                 String strpid = "5"; //pid
 
@@ -106,7 +106,7 @@ public class SavePhotoServiceImpl implements SavePhotoService {
                         System.out.println("图像识别接口出错，请检查OCR服务。");
                         break;
                     }else if (s.contains("系统找不到指定的路径")){
-                        imageData.setAbnormalImage("系统找不到指定的路径");
+                        imageData.setAbnormalImage(4);
                         continue;
                     }else if (s.contains("找不到网络名")){
                         System.out.println("文件共享异常，请检查是否开启文件共享。");
@@ -138,15 +138,15 @@ public class SavePhotoServiceImpl implements SavePhotoService {
                     summarizing = DisposeReturn.carCertificates(ocrs,summarizing);
 
                     if (summarizing.getLicencePlate()!=null&&summarizing.getLicencePlate().length()!=7){
-                        imageData.setAbnormalImage("识别不全");
+                        imageData.setAbnormalImage(2);
                     }
                     if (summarizing.getTLicencePlate()!=null&&summarizing.getTLicencePlate().length()!=7){
-                        imageData.setAbnormalImage("识别不全");
+                        imageData.setAbnormalImage(2);
                     }
                 }catch (Exception e){
-                    imageData.setAbnormalImage("图片有误");
+                    imageData.setAbnormalImage(3);
                 }
-            }else if (fileName.equals("车头照")||fileName.equals("车尾照")){
+            }else if (nTypeID == 11 || nTypeID == 12){
                 String strpid = "6"; //pid
                 File file = new File(fileUrl);
                 FileInputStream is;
@@ -169,7 +169,7 @@ public class SavePhotoServiceImpl implements SavePhotoService {
                         bc="图像识别接口出错，请检查OCR服务。";
                         break;
                     }else if (s.contains("系统找不到指定的路径")){
-                        imageData.setAbnormalImage("系统找不到指定的路径");
+                        imageData.setAbnormalImage(4);
                         continue;
                     }else if (s.contains("找不到网络名")){
                         System.out.println("文件共享异常，请检查是否开启文件共享。");
@@ -206,7 +206,7 @@ public class SavePhotoServiceImpl implements SavePhotoService {
                     Object vehicleid = jo.get("车牌号");
 
                     //存放入实体类
-                    if (fileName.equals("车头照")){
+                    if (nTypeID == 11){
                         summarizing.setTractionVehicleid(vehicleid.toString());
                     }else{
                         summarizing.setTrailerVehicleid(vehicleid.toString());
@@ -214,16 +214,16 @@ public class SavePhotoServiceImpl implements SavePhotoService {
 
                     //判断车牌是否过长
                     if (summarizing.getTrailerVehicleid()!=null&&summarizing.getTrailerVehicleid().length()!=7){
-                        imageData.setAbnormalImage("识别不全");
+                        imageData.setAbnormalImage(2);
                     }
                     if (summarizing.getTractionVehicleid()!=null&&summarizing.getTractionVehicleid().length()!=7){
-                        imageData.setAbnormalImage("识别不全");
+                        imageData.setAbnormalImage(2);
                     }
                 }catch (Exception e){
-                    imageData.setAbnormalImage("图片有误");
+                    imageData.setAbnormalImage(3);
                 }
             }
-            if(imageData.getAbnormalImage().equals("图片有误")){
+            if(imageData.getAbnormalImage() == 3){
                 continue;
             }else summarizingList.add(summarizing);
 
@@ -260,7 +260,7 @@ public class SavePhotoServiceImpl implements SavePhotoService {
     public void updateImage(Summarizing summarizing) {
         ImageData imageData= new ImageData();
         imageData.setId(summarizing.getId());
-        imageData.setAbnormalImage("图片处理完成");
+        imageData.setAbnormalImage(4);
         savePhotoMapper.updateById(imageData);
         summarizing.setId(null);
         UpdateWrapper<Summarizing> updateWrapper = new UpdateWrapper<>();
@@ -273,7 +273,7 @@ public class SavePhotoServiceImpl implements SavePhotoService {
     public void updateImageNo(Long id) {
         ImageData imageData = new ImageData();
         imageData.setId(id);
-        imageData.setAbnormalImage("图片无法识别");
+        imageData.setAbnormalImage(5);
         savePhotoMapper.updateById(imageData);
     }
 
@@ -291,7 +291,7 @@ public class SavePhotoServiceImpl implements SavePhotoService {
         return integer;
     }
 
-    //获取错误信息
+    //获取识别失败图片信息
     @Override
     public List<ImageData> getError(Long id) {
         List<ImageData> imageDataList = savePhotoMapper.selectError(id);
@@ -305,14 +305,15 @@ public class SavePhotoServiceImpl implements SavePhotoService {
 //        Page<ImageData> imageDataPage = savePhotoMapper.selectPage(page, imageDataQueryWrapper);
 //        List<ImageData> imageDataList = imageDataPage.getRecords();
 ////        List<ImageData> imageDataList=savePhotoMapper.selectList(imageDataQueryWrapper);
-        for (ImageData imageData : imageDataList){
-            if (imageData.getAbnormalImage().equals("图片有误")){
-                imageData.setAbnormalImage("图片识别失败");
-            }
-        }
+//        for (ImageData imageData : imageDataList){
+//            if (imageData.getAbnormalImage().equals("图片有误")){
+//                imageData.setAbnormalImage("图片识别失败");
+//            }
+//        }
         return imageDataList;
     }
 
+    //翻页
     @Override
     public List<ImageData> getErrorUp(Long id) {
         List<ImageData> imageDataList = savePhotoMapper.selectErrorUp(id);
@@ -324,11 +325,11 @@ public class SavePhotoServiceImpl implements SavePhotoService {
 //        imageDataQueryWrapper.orderByDesc("id");
 //        Page<ImageData> imageDataPage = savePhotoMapper.selectPage(page, imageDataQueryWrapper);
 //        List<ImageData> imageDataList = imageDataPage.getRecords();
-        for (ImageData imageData : imageDataList){
-            if (imageData.getAbnormalImage().equals("图片有误")){
-                imageData.setAbnormalImage("图片识别失败");
-            }
-        }
+//        for (ImageData imageData : imageDataList){
+//            if (imageData.getAbnormalImage().equals("图片有误")){
+//                imageData.setAbnormalImage("图片识别失败");
+//            }
+//        }
         Collections.reverse(imageDataList);
         return imageDataList;
     }

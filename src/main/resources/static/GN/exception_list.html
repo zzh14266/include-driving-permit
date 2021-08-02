@@ -198,7 +198,7 @@ $(function(){
       color = getId("color");
       $("#body").attr("data-theme",color);
 
-      var serverUrl=fwqURL+"50//getSun";
+      var serverUrl="/getSun";
       axios.get(serverUrl)
               .then(function(res){
                 sun=res.data;
@@ -237,7 +237,7 @@ $(function(){
         window.location.href="manually_modify.html?id="+id+"&number="+number;
       },
       changePage(){
-        var serverUrl=fwqURL+"50//getError?lastId="+lastId;
+        var serverUrl="/getError?lastId="+lastId;
         axios.get(serverUrl)
                 .then(function(res){
                   var result=res.data;
@@ -249,7 +249,7 @@ $(function(){
       },
       changePageUp(){
         vue.$data.imagedataList=null;
-        var serverUrl=fwqURL+"50//getErrorUp?firstId="+firstId;
+        var serverUrl="/getErrorUp?firstId="+firstId;
         axios.get(serverUrl)
                 .then(function(res){
                   var result=res.data;

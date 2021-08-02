@@ -40,9 +40,9 @@ public class DisposeReturn {
                             case "备注":
                                 String universal = ocrFieldList.getValue();
                                 if (universal.contains("仅可")||universal.contains("用于")||universal.contains("不可拆解")||universal.contains("物体")){
-                                    checkdata.setVlLimitText("仅可用于运送不可拆解物体");
+                                    checkdata.setVlLimitText(1);
                                 }else{
-                                    checkdata.setVlLimitText("空");
+                                    checkdata.setVlLimitText(2);
                                 }
                                 break;
                         }

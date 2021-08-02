@@ -174,10 +174,10 @@
     var et = null;
     var vehicleId = document.getElementById("vehicleId").value;
     if (st==""||et==""||vehicleId==""){
-      alert("把数据填上呗。。。");
+      alert("请输入时间和车牌");
       return;
     }else if(vehicleId.length!=7){
-      alert("请输入正确的车牌号。");
+      alert("请输入正确的车牌号");
       return;
     }
 
@@ -187,7 +187,7 @@
     alert("开始下载");
     $.ajax({
       type : "get",
-      url: fwqURL+"50//getImage?startTime="+st+"&endTime="+et+"&vehicleId="+vehicleId,
+      url: "/getImage?startTime="+st+"&endTime="+et+"&vehicleId="+vehicleId,
       contentType: false,
       processData: false,
       success: function (result) {

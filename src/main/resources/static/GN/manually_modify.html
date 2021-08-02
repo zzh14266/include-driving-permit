@@ -219,7 +219,7 @@
 
     $.ajax({
       type : "get",
-      url: fwqURL+"50//getImageData?id="+id,
+      url: "/getImageData?id="+id,
       contentType: false,
       processData: false,
       success: function (result) {
@@ -281,7 +281,7 @@
       }
       $.ajax({
         type : "post",
-        url: fwqURL+"50//updateImage/",
+        url: "/updateImage/",
         data: formData,
         contentType: false,
         processData: false,
@@ -310,7 +310,7 @@
 
       $.ajax({
         type: "post",
-        url: fwqURL + "50//updateImage/",
+        url: "/updateImage/",
         data: formData,
         contentType: false,
         processData: false,
@@ -324,7 +324,7 @@
   function updateImageNo(){
     $.ajax({
       type : "post",
-      url: fwqURL+"50//updateImageNo?id="+id,
+      url: "/updateImageNo?id="+id,
       contentType: false,
       processData: false,
       success: function (result) {

@@ -19,7 +19,7 @@ public class Summarizing {
     private String trailerVehicleid; //挂车车牌（车辆后方图片中的）
     private String vehicleDimension; //前车尺寸
     private String weightLimt;       //前车限重
-    private String vlLimitText;      //仅可用于运送不可拆解物体
+    private Integer vlLimitText;     //0、null；1、仅可用于不可拆卸物体；2、没有仅可
 
     //下面为新增字段
     //前车部分

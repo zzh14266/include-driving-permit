@@ -19,7 +19,7 @@ public interface SummarizingService {
 
     void b(Long id);
 
-    List<Long> c(int id);
+//    List<Long> c(int id);
 
     List<Export> getSumm(Integer typeId);
 }

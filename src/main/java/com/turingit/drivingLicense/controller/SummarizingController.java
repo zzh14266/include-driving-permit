@@ -113,7 +113,7 @@ public class SummarizingController {
             cellDataM.setCellValue(tmp.getSourcedrivertelephone());
             // 第14列
             Cell cellDataN = rowData.createCell(i++);
-            cellDataN.setCellValue(tmp.getVL_limit_text());
+            cellDataN.setCellValue(tmp.getVlLimitText());
             // 第15列
             Cell cellDataO = rowData.createCell(i++);
             cellDataO.setCellValue(tmp.getLicencePlate());
