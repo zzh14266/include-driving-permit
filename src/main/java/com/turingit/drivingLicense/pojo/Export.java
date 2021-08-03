@@ -21,8 +21,8 @@ public class Export {
     private String checktime;        //查验开始时间
     private String freighttypes;     //运输货物品种
     private String checkresult;      //查验结果
-    private String vehicletype;      //车型
-    private String vehicleclass;     //车种
+    private Integer vehicletype;      //车型
+    private Integer vehicleclass;     //车种
     private String calculationfeeStr;//应收金额（元）
     private String sourcedrivertelephone;//申报电话
     private String vlLimitText;      //备注

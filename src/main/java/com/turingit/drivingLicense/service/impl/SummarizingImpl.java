@@ -36,7 +36,6 @@ public class SummarizingImpl implements SummarizingService {
 //        if (typeId==3)exports = summarizingMapper.selectExport3(pagination);
 //        if (typeId==4)exports = summarizingMapper.selectExport4(pagination);
 //        if (typeId==5)exports = summarizingMapper.selectExport5(pagination);
-        insertExport();
         return exports;
     }
 

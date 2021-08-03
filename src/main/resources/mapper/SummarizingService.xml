@@ -6,12 +6,8 @@
 
     <!--    “仅可用于运送不可拆解物体”大件运输车辆假冒绿色通道嫌疑的真假证记录-->
     <select id="selectExport1" resultType="com.turingit.drivingLicense.pojo.Export">
-        select concat(checkId,'\t') checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicleType,vehicleClass,calculationFeeStr,sourcedrivertelephone,
-               (case vl_limit_text
-                    when 2 then '假证嫌疑'
-                    when 1 then '挂车行驶证印有“仅可用于运送不可拆解物体”'
-                    else 0 end) vl_limit_text
-                ,licence_plate,vehicle_type vehicle_type_new,owner, address,function,brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,
+        select concat(checkId,'\t') checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicletype,vehicleClass,calculationfee_str,sourcedrivertelephone,
+               vl_limit_text,licence_plate,vehicle_type_new vehicle_type_new,owner, address,function,brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,
                t_vehicle_type,t_owner,t_address,t_function,t_brand_model,t_plate_number,t_record_date,t_opening_date,load_capacity,t_total_mass, t_curb_weight, trailer_dimension,img_path
         FROM public.export2 where is_genuine_and_sham = 1
         order by t_licence_plate
@@ -25,11 +21,11 @@
     </select>
     <!--1转储-->
     <select id="getS1" resultType="com.turingit.drivingLicense.pojo.Export">
-        select concat(s.checkId,'') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+        select concat(s.checkId,'') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicletype,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
                (case s.vl_limit_text
                     when 2 then '假证嫌疑'
                     when 1 then '挂车行驶证印有“仅可用于运送不可拆解物体”'
-                    else 0 end) vl_limit_text
+                    else '未知' end) vl_limit_text
                 ,s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
                s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path
         from public.summarizing2 s
@@ -47,12 +43,8 @@
 
     <!--1下载-->
     <select id="download1" resultType="com.turingit.drivingLicense.pojo.Export">
-        select concat(checkId,'\t') checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicleType,vehicleClass,calculationFeeStr,sourcedrivertelephone,
-               (case vl_limit_text
-                    when 2 then '假证嫌疑'
-                    when 1 then '挂车行驶证印有“仅可用于运送不可拆解物体”'
-                    else 0 end) vl_limit_text
-                ,licence_plate,vehicle_type vehicle_type_new,owner, address,function,brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,
+        select concat(checkId,'\t') checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicletype,vehicleClass,calculationfee_str,sourcedrivertelephone,
+               vl_limit_text,licence_plate,vehicle_type_new vehicle_type_new,owner, address,function,brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,
                t_vehicle_type,t_owner,t_address,t_function,t_brand_model,t_plate_number,t_record_date,t_opening_date,load_capacity,t_total_mass, t_curb_weight, trailer_dimension,img_path
         FROM public.export2 where is_genuine_and_sham = 1
         order by t_licence_plate
@@ -61,12 +53,8 @@
 
     <!--    “仅可用于运送不可拆解物体”大件运输车的绿色通道记录-->
     <select id="selectExport2" resultType="com.turingit.drivingLicense.pojo.Export">
-        select concat(checkId,'\t') checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicleType,vehicleClass,calculationFeeStr,sourcedrivertelephone,
-               (case vl_limit_text
-                    when 2 then '假证嫌疑'
-                    when 1 then '挂车行驶证印有“仅可用于运送不可拆解物体”'
-                    else 0 end) vl_limit_text
-                ,licence_plate,vehicle_type vehicle_type_new,owner, address,function,brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,
+        select concat(checkId,'\t') checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicletype,vehicleClass,calculationfee_str,sourcedrivertelephone,
+               vl_limit_text,licence_plate,vehicle_type_new vehicle_type_new,owner, address,function,brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,
                t_vehicle_type,t_owner,t_address,t_function,t_brand_model,t_plate_number,t_record_date,t_opening_date,load_capacity,t_total_mass, t_curb_weight, trailer_dimension,img_path
         FROM public.export2 where is_only_used = 1
         order by t_licence_plate
@@ -80,11 +68,11 @@
     </select>
     <!--2转储-->
     <select id="getS2" resultType="com.turingit.drivingLicense.pojo.Export">
-        select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicleType,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
+        select distinct on(s.t_licence_plate,s.t_total_mass) concat(s.checkId,'') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicletype,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
             (case s.vl_limit_text
             when 2 then '假证嫌疑'
             when 1 then '挂车行驶证印有“仅可用于运送不可拆解物体”'
-            else 0 end
+            else '未知' end
             ) vl_limit_text,
             s.licence_plate,s.vehicle_type vehicle_type_new,s.owner, s.address,s.function,s.brand_model,s.plate_number,s.engine_number,s.record_date,s.opening_date, s.curb_weight,s.vehicle_dimension,
             s.t_vehicle_type,s.t_owner,s.t_address,s.t_function,s.t_brand_model,s.t_plate_number,s.t_record_date,s.t_opening_date,s.load_capacity,s.t_total_mass, s.t_curb_weight, s.trailer_dimension,s.img_path
@@ -94,12 +82,8 @@
 
     <!--2下载-->
     <select id="download2" resultType="com.turingit.drivingLicense.pojo.Export">
-        select concat(checkId,'\t') checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicleType,vehicleClass,calculationFeeStr,sourcedrivertelephone,
-               (case vl_limit_text
-                    when 2 then '假证嫌疑'
-                    when 1 then '挂车行驶证印有“仅可用于运送不可拆解物体”'
-                    else 0 end) vl_limit_text
-                ,licence_plate,vehicle_type vehicle_type_new,owner, address,function,brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,
+        select concat(checkId,'\t') checkId,vehicleId,t_licence_plate,enStationName,roadName,exStationName,checktime,freightTypes,checkResult,vehicletype,vehicleClass,calculationfee_str,sourcedrivertelephone,
+               vl_limit_text,licence_plate,vehicle_type_new vehicle_type_new,owner, address,function,brand_model,plate_number,engine_number,record_date,opening_date, curb_weight,vehicle_dimension,
                t_vehicle_type,t_owner,t_address,t_function,t_brand_model,t_plate_number,t_record_date,t_opening_date,load_capacity,t_total_mass, t_curb_weight, trailer_dimension,img_path
         FROM public.export2 where is_only_used = 1
         order by t_licence_plate
