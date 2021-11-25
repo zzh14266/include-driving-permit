@@ -2,7 +2,11 @@ package com.turingit;
 
 //import com.turingit.drivingLicense.ImageProcessing.Reset;
 //import com.turingit.drivingLicense.baiduClass.License;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.turingit.drivingLicense.mapper.SavePhotoMapper;
 import com.turingit.drivingLicense.mapper.SummarizingMapper;
+import com.turingit.drivingLicense.pojo.Export;
+import com.turingit.drivingLicense.pojo.ImageData;
 import com.turingit.drivingLicense.service.SavePhotoService;
 import com.turingit.drivingLicense.service.SummarizingService;
 import com.turingit.drivingLicense.service.impl.SummarizingImpl;
@@ -10,10 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.channels.FileChannel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,17 +33,62 @@ class IncludeDrivingPermitApplicationTests {
     private SavePhotoService savePhotoService;
 
     @Autowired
+    private SavePhotoMapper savePhotoMapper;
+
+    @Autowired
     private SummarizingService summarizingService;
 
     @Test
-    void savephoto() throws ParseException {
-        summarizingService.selectExport(1,5);
+    void insertExport() {
+        List<Export> s1 = summarizingMapper.getS1();
     }
 
     @Test
-    void save(){
-        summarizingService.b(1L);
+    void test() {
+        QueryWrapper<ImageData> imageDataQueryWrapper = new QueryWrapper<>();
+        imageDataQueryWrapper.eq("typeid",13).last("limit 500000");
+        List<ImageData> lsImageData = savePhotoMapper.selectList(imageDataQueryWrapper);
+//        List<Export> exports = summarizingMapper.getS1();
+        int n = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        for (ImageData objImageData : lsImageData) {
+            n++;
+            System.out.println(n);
+            if (objImageData.getImgPath() == null || objImageData.getImgPath().equals("")){
+                continue;
+            }
+            String yUrl = objImageData.getImgPath();
+            File s = new File("\\\\192.168.10.108\\CheckData\\images\\" + yUrl);
+
+            String sImgPath = objImageData.getImgPath().substring(0, 7);
+
+            File t = new File("D:\\行驶证\\" + sImgPath + " " + sdf.format(objImageData.getChecktime()) + ".jpg");
+            FileInputStream fi = null;
+            FileOutputStream fo = null;
+            FileChannel in = null;
+            FileChannel out = null;
+            try {
+                fi = new FileInputStream(s);
+                fo = new FileOutputStream(t);
+                in = fi.getChannel();//得到对应的文件通道
+                out = fo.getChannel();//得到对应的文件通道
+                in.transferTo(0, in.size(), out);//连接两个通道，并且从in通道读取，然后写入out通道
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    fi.close();
+                    in.close();
+                    fo.close();
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
+
 
     @Test
     public void ps() {

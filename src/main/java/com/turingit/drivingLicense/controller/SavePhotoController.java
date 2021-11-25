@@ -3,12 +3,12 @@ package com.turingit.drivingLicense.controller;
 import com.turingit.drivingLicense.pojo.ImageData;
 import com.turingit.drivingLicense.pojo.Summarizing;
 import com.turingit.drivingLicense.service.SavePhotoService;
-import com.turingit.drivingLicense.service.impl.SummarizingImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,67 +22,12 @@ public class SavePhotoController {
 
     @RequestMapping("mq")
     public String mq(){
-        String mq = savePhotoService.mq();
-        return mq;
+        return savePhotoService.mq();
     }
 
     //处理某一日的图片
     @RequestMapping("SavePhotoUrl")
-    public String savePhotoUrl1(String st ,String et,int id) throws ParseException {
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl2")
-    public String savePhotoUrl2(String st ,String et,int id) throws ParseException {
-        st=time(st,2);
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl3")
-    public String savePhotoUrl3(String st ,String et,int id) throws ParseException {
-        st=time(st,4);
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl4")
-    public String savePhotoUrl4(String st ,String et,int id) throws ParseException {
-        st=time(st,6);
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl5")
-    public String savePhotoUrl5(String st ,String et,int id) throws ParseException {
-        st=time(st,8);
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl6")
-    public String savePhotoUrl6(String st ,String et,int id) throws ParseException {
-        st=time(st,10);
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl7")
-    public String savePhotoUrl7(String st ,String et,int id) throws ParseException {
-        st=time(st,12);
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl8")
-    public String savePhotoUrl8(String st ,String et,int id) throws ParseException {
-        st=time(st,14);
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl9")
-    public String savePhotoUrl9(String st ,String et,int id) throws ParseException {
-        st=time(st,16);
-        return getString(st, et);
-    }
-
-    @RequestMapping("SavePhotoUrl10")
-    public String savePhotoUrl10(String st ,String et,int id) throws ParseException {
-        st=time(st,18);
+    public String savePhotoUrl(String st ,String et,int id) throws ParseException {
         return getString(st, et);
     }
 
@@ -112,12 +57,12 @@ public class SavePhotoController {
     //emm怎么说好呢。。代码重复封装。
     private String getString(String st, String et) throws ParseException {
         String a=st;
-        String st2 = time(st,2);
+        String st2 = time(st,1);
         String res = savePhotoService.getIdList(st, st2);
         if (!res.equals("保存成功")) return res;
 
         while (true){
-            st = time(st,2);
+            st = time(st,1);
 
             //比较时间
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -125,7 +70,7 @@ public class SavePhotoController {
             Date sd2=df.parse(et);
 
             if (sd1.before(sd2)){
-                st2 = time(st,2);
+                st2 = time(st,1);
                 res = savePhotoService.getIdList(st, st2);
                 if (!res.equals("保存成功")) return res;
             }else {
@@ -133,7 +78,6 @@ public class SavePhotoController {
             }
         }
         System.out.println("时间段："+a+"~"+et+"处理完成。");
-        new SummarizingImpl().insertExport();
         return res;
     }
 

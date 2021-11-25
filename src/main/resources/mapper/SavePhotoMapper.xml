@@ -13,12 +13,12 @@
                 </if>
             </set>
             where id = #{item.id,jdbcType=BIGINT}
-            COMMIT;
+            ;
         </foreach>
     </update>
 
     <select id="selectTime" resultType="com.turingit.drivingLicense.pojo.ImageData">
-        select id,abnormal_image,checkid,img_path,typename,checktime
+        select id,abnormal_image,checkid,img_path,typename,checktime,typeid
         from public.imagedata2
         where checkid in (
             SELECT checkid
@@ -26,6 +26,6 @@
             where checktime &gt;= #{st}and checktime &lt; #{et}
         )
         and abnormal_image is null
-        and (typename='行驶证' or typename='车头照' or typename='车尾照')
+          and typeid in (11, 12, 13)
     </select>
 </mapper>

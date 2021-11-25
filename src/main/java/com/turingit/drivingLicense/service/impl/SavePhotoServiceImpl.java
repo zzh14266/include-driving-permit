@@ -1,5 +1,6 @@
 package com.turingit.drivingLicense.service.impl;
 //保存照片基本信息，调用百度识图。
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
@@ -20,10 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class SavePhotoServiceImpl implements SavePhotoService {
@@ -40,10 +38,10 @@ public class SavePhotoServiceImpl implements SavePhotoService {
     //根据时间段获取图片ID
     @Override
     public String getIdList(String st, String et){
-        String bc="保存成功";
 
         List<ImageData> imageDataList = savePhotoMapper.selectTime(st, et);
 
+        String bc="保存成功";
 //        QueryWrapper<ImageData> imageDataQueryWrapper = new QueryWrapper<>();
 //        imageDataQueryWrapper.select("id","abnormal_image","checkid","img_path","typename","checktime");
 //        imageDataQueryWrapper.between("checktime",st,et);
@@ -59,11 +57,14 @@ public class SavePhotoServiceImpl implements SavePhotoService {
         for (ImageData imageData:imageDataList){
 
             jd+=1;
-            System.out.println(imageData.getId()+":"+jd+"/"+imageDataList.size()+"处理时间为："+imageData.getChecktime());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formatDate = sdf.format(imageData.getChecktime());
+            System.out.println(imageData.getId()+":"+jd+"/"+imageDataList.size()+"处理时间为："+ formatDate);
 
             Summarizing summarizing = new Summarizing();
 
-            if (imageData.getAbnormalImage() != 0){
+            if (imageData.getAbnormalImage() == null){
+            } else if (imageData.getAbnormalImage() != 0){
                 System.out.println("图片已被处理");
                 continue;
             }
@@ -144,6 +145,7 @@ public class SavePhotoServiceImpl implements SavePhotoService {
                         imageData.setAbnormalImage(2);
                     }
                 }catch (Exception e){
+                    System.out.println(e);
                     imageData.setAbnormalImage(3);
                 }
             }else if (nTypeID == 11 || nTypeID == 12){
@@ -220,20 +222,30 @@ public class SavePhotoServiceImpl implements SavePhotoService {
                         imageData.setAbnormalImage(2);
                     }
                 }catch (Exception e){
+                    System.out.println(e);
                     imageData.setAbnormalImage(3);
                 }
             }
             if(imageData.getAbnormalImage() == 3){
-                continue;
-            }else summarizingList.add(summarizing);
+                savePhotoMapper.updateById(imageData);
+            }else{
+                QueryWrapper<Summarizing> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("checkId", summarizing.getCheckid());
+                Summarizing summarizing1 = summarizingMapper.selectOne(queryWrapper);
+                if (summarizing1 == null){
+                    summarizingMapper.insert(summarizing);
+                }else {
+                    summarizingMapper.updateById(summarizing);
+                }
+                savePhotoMapper.updateById(imageData);
+//                summarizingList.add(summarizing);
+            }
 
-            //减少消耗
-            imageData.setCheckid(null).setImgPath(null).setTypename(null);
         }
 
         //存数据
-        savePhotoMapper.updateImage(imageDataList);
-        summarizingMapper.updateSummar(summarizingList);
+//        savePhotoMapper.updateImage(imageDataList);
+//        summarizingMapper.updateSummar(summarizingList);
 
         //输出当前时间和处理日期
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -251,7 +263,7 @@ public class SavePhotoServiceImpl implements SavePhotoService {
         summarizingQueryWrapper.eq("checkid",imageData.getCheckid());
         List<Summarizing> summarizings = summarizingMapper.selectList(summarizingQueryWrapper);
         Summarizing summarizing = summarizings.get(0);
-        summarizing.setId((long)id);
+//        summarizing.setId((long)id);
         summarizing.setAddress(imageData.getImgPath());
         return summarizing;
     }
@@ -259,10 +271,10 @@ public class SavePhotoServiceImpl implements SavePhotoService {
     @Override
     public void updateImage(Summarizing summarizing) {
         ImageData imageData= new ImageData();
-        imageData.setId(summarizing.getId());
+//        imageData.setId(summarizing.getId());
         imageData.setAbnormalImage(4);
         savePhotoMapper.updateById(imageData);
-        summarizing.setId(null);
+//        summarizing.setId(null);
         UpdateWrapper<Summarizing> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("checkid",summarizing.getCheckid());
         summarizingMapper.update(summarizing,updateWrapper);

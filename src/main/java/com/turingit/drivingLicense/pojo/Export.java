@@ -23,7 +23,7 @@ public class Export {
     private String checkresult;      //查验结果
     private Integer vehicletype;      //车型
     private Integer vehicleclass;     //车种
-    private String calculationfeeStr;//应收金额（元）
+    private Float calculationfeeStr;//应收金额（元）
     private String sourcedrivertelephone;//申报电话
     private String vlLimitText;      //备注
     private String licencePlate;     //牵引车号牌号码（识别）

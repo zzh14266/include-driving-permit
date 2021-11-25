@@ -11,9 +11,12 @@ server:
 # spring
 spring:
   datasource:
-    url: jdbc:postgresql://192.168.10.108:5433/greenlanecheckdata?currentSchema=sys&stringtype=unspecified&reWriteBatchedInserts=true
+    url: jdbc:postgresql://192.168.10.108:5432/postgres?currentSchema=sys&stringtype=unspecified&reWriteBatchedInserts=true
     username: postgres
     password: sa123
+#    url: jdbc:postgresql://localhost:5432/greenlanecheckdata?currentSchema=sys&stringtype=unspecified&reWriteBatchedInserts=true
+#    username: postgres
+#    password: Qweasd123
     platform: POSTGRESQL
     hikari:
       max-lifetime: 864000000

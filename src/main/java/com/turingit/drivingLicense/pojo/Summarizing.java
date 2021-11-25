@@ -12,8 +12,7 @@ import java.util.Date;
 @Data
 @Accessors(chain=true)
 public class Summarizing {
-    @TableId(type = IdType.AUTO)
-    private Long Id;              //图片ID
+    @TableId()
     private String checkid;       //查验编号
 
     private String trailerVehicleid; //挂车车牌（车辆后方图片中的）

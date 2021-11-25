@@ -20,6 +20,21 @@
         FROM public.export2 where is_genuine_and_sham = 1
     </select>
     <!--1转储-->
+<!--    <select id="getS1" resultType="com.turingit.drivingLicense.pojo.Export">-->
+<!--        select concat(s.checkId,'') checkId,s.img_path-->
+<!--        from public.summarizing2 s-->
+<!--                 inner join public.checkdata2 c-->
+<!--                            on s.checkid=c.checkid and s.t_licence_plate in (-->
+<!--                                select distinct on (t_licence_plate) t_licence_plate-->
+<!--        from public.summarizing2-->
+<!--        where vl_limit_text = 1-->
+<!--            ) and s.t_licence_plate in (-->
+<!--        select distinct on (t_licence_plate) t_licence_plate-->
+<!--        from public.summarizing2-->
+<!--        where vl_limit_text = 2-->
+<!--            )-->
+<!--    </select>-->
+
     <select id="getS1" resultType="com.turingit.drivingLicense.pojo.Export">
         select concat(s.checkId,'') checkId,c.vehicleId,s.t_licence_plate,c.enStationName,c.roadName,c.exStationName,c.checktime,c.freightTypes,c.checkResult,c.vehicletype,c.vehicleClass,c.calculationFeeStr,c.sourcedrivertelephone,
                (case s.vl_limit_text
@@ -373,7 +388,7 @@
             <if test="item.vlLimitText != null" >vl_limit_text= #{item.vlLimitText,jdbcType=VARCHAR},</if>
             <if test="item.imgPath != null" >img_path= #{item.imgPath,jdbcType=VARCHAR},</if>
             </trim>
-            COMMIT;
+            ;
         </foreach>
     </insert>
 </mapper>
