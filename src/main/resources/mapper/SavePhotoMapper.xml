@@ -26,6 +26,6 @@
             where checktime &gt;= #{st}and checktime &lt; #{et}
         )
         and abnormal_image is null
-          and typeid in (11, 12, 13)
+          and typeid in (13)
     </select>
 </mapper>

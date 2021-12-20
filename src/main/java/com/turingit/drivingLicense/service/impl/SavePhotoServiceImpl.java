@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
+import com.sun.xml.internal.bind.util.Which;
 import com.turingit.drivingLicense.ImageProcessing.JsonToList;
 import com.turingit.drivingLicense.baiduClass.DisposeReturn;
 import com.turingit.drivingLicense.mapper.SavePhotoMapper;
@@ -90,29 +91,31 @@ public class SavePhotoServiceImpl implements SavePhotoService {
                 File file = new File(fileUrl);
                 FileInputStream is;
                 String readByGet = null;
-                try {
-                    is = new FileInputStream(file);
-                    byte[] data = new byte[is.available()];
-                    is.read(data);
-                    String base64file = Base64.encode(data);
-                    String params = "filedata="+ URLEncoder.encode(base64file, "utf-8");
-
-                    //请求参数
-                    params+="&pid="+URLEncoder.encode(strpid, "utf-8");
-                    readByGet = readByPOST(strUrl, params);
-//                System.out.println(readByGet);
-                }catch (Exception e){
-                    String s = e.toString();
-                    if (s.contains("Connection refused: connect")){
-                        System.out.println("图像识别接口出错，请检查OCR服务。");
-                        break;
-                    }else if (s.contains("系统找不到指定的路径")){
+                boolean b1 = true;
+                boolean b2 = false;
+                while (b1){
+                    readByGet = useOCR(fileUrl);
+                    if (readByGet.equals("系统找不到指定的路径")){
                         imageData.setAbnormalImage(4);
+                        b1 = false;
+                        b2 = true;
+                    }else if ((!readByGet.contains("PageInfo") && readByGet.contains("识别失败")) || !readByGet.contains("PageInfo") && readByGet.contains("图像分类失败")){
+                        imageData.setAbnormalImage(3);
+                        b1 = false;
+                    }else if (!readByGet.contains("PageInfo")){
+                        System.out.println("服务忙重试");
+                        try {
+                            Thread.sleep(1000 * 2);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         continue;
-                    }else if (s.contains("找不到网络名")){
-                        System.out.println("文件共享异常，请检查是否开启文件共享。");
-                        break;
+                    }else {
+                        b1 = false;
                     }
+                }
+                if (b2){
+                    continue;
                 }
 
                 try {
@@ -374,5 +377,36 @@ public class SavePhotoServiceImpl implements SavePhotoService {
         reader.close();
         connection.disconnect();
         return sbf.toString();
+    }
+
+    public String useOCR(String fileUrl){
+        String strpid = "5"; //pid
+
+        File file = new File(fileUrl);
+        FileInputStream is;
+        String readByGet = null;
+        boolean b = true;
+        try {
+            is = new FileInputStream(file);
+            byte[] data = new byte[is.available()];
+            is.read(data);
+            String base64file = Base64.encode(data);
+            String params = "filedata="+ URLEncoder.encode(base64file, "utf-8");
+
+            //请求参数
+            params+="&pid="+URLEncoder.encode(strpid, "utf-8");
+            readByGet = readByPOST(strUrl, params);
+//                System.out.println(readByGet);
+        }catch (Exception e){
+            String s = e.toString();
+            if (s.contains("Connection refused: connect")){
+                System.out.println("图像识别接口出错，请检查OCR服务。");
+            }else if (s.contains("系统找不到指定的路径")){
+                return "系统找不到指定的路径";
+            }else if (s.contains("找不到网络名")){
+                System.out.println("文件共享异常，请检查是否开启文件共享。");
+            }
+        }
+        return readByGet;
     }
 }
