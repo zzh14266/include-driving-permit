@@ -95,13 +95,17 @@ public class SavePhotoServiceImpl implements SavePhotoService {
                 boolean b2 = false;
                 while (b1){
                     readByGet = useOCR(fileUrl);
-                    if (readByGet.equals("系统找不到指定的路径")){
+                    if (readByGet.equals("系统找不到指定的路径") || readByGet.contains("图片错误,请换一张再重试") || readByGet.contains("图片未识别出证件内容") || readByGet.contains("图片未检测到证件")){
                         imageData.setAbnormalImage(4);
                         b1 = false;
                         b2 = true;
                     }else if ((!readByGet.contains("PageInfo") && readByGet.contains("识别失败")) || !readByGet.contains("PageInfo") && readByGet.contains("图像分类失败")){
                         imageData.setAbnormalImage(3);
                         b1 = false;
+                    }else if (readByGet.contains("请求超时")){
+                        System.out.println("请求超时");
+                        b1 = false;
+                        b2 = true;
                     }else if (!readByGet.contains("PageInfo")){
                         System.out.println("服务忙重试");
                         try {

@@ -1,6 +1,7 @@
 package com.turingit.drivingLicense.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.turingit.drivingLicense.pojo.Export;
 import com.turingit.drivingLicense.pojo.ImageData;
 import com.turingit.drivingLicense.pojo.Summarizing;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,4 +25,7 @@ public interface SavePhotoMapper extends BaseMapper<ImageData> {
 
     @Select("select min(checktime) from public.checkdata2 where checkid in ( SELECT checkid FROM public.imagedata2 where abnormal_image is null and (typename='行驶证' or typename='车头照' or typename='车尾照')) ")
     String mq();
+
+    @Select("SELECT * FROM public.export2")
+    public List<Export> selectExport();
 }

@@ -3,25 +3,20 @@ package com.turingit;
 //import com.turingit.drivingLicense.ImageProcessing.Reset;
 //import com.turingit.drivingLicense.baiduClass.License;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.turingit.drivingLicense.mapper.ExportMapper;
 import com.turingit.drivingLicense.mapper.SavePhotoMapper;
 import com.turingit.drivingLicense.mapper.SummarizingMapper;
 import com.turingit.drivingLicense.pojo.Export;
-import com.turingit.drivingLicense.pojo.ImageData;
 import com.turingit.drivingLicense.service.SavePhotoService;
 import com.turingit.drivingLicense.service.SummarizingService;
-import com.turingit.drivingLicense.service.impl.SummarizingImpl;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
-import java.nio.channels.FileChannel;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Logger;
 
 @SpringBootTest
 class IncludeDrivingPermitApplicationTests {
@@ -36,6 +31,9 @@ class IncludeDrivingPermitApplicationTests {
     private SavePhotoMapper savePhotoMapper;
 
     @Autowired
+    private ExportMapper exportMapper;
+
+    @Autowired
     private SummarizingService summarizingService;
 
     @Test
@@ -44,56 +42,32 @@ class IncludeDrivingPermitApplicationTests {
     }
 
     @Test
-    void test() {
-        QueryWrapper<ImageData> imageDataQueryWrapper = new QueryWrapper<>();
-        imageDataQueryWrapper.eq("typeid",13).last("limit 500000");
-        List<ImageData> lsImageData = savePhotoMapper.selectList(imageDataQueryWrapper);
-//        List<Export> exports = summarizingMapper.getS1();
-        int n = 0;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        for (ImageData objImageData : lsImageData) {
-            n++;
-            System.out.println(n);
-            if (objImageData.getImgPath() == null || objImageData.getImgPath().equals("")){
-                continue;
-            }
-            String yUrl = objImageData.getImgPath();
-            File s = new File("\\\\192.168.10.108\\CheckData\\images\\" + yUrl);
+    void test() throws IOException {
+        String path = "D:\\一车一档";
 
-            String sImgPath = objImageData.getImgPath().substring(0, 7);
+        File file=new File(path);
+        File[] tempList = file.listFiles();
 
-            File t = new File("D:\\行驶证\\" + sImgPath + " " + sdf.format(objImageData.getChecktime()) + ".jpg");
-            FileInputStream fi = null;
-            FileOutputStream fo = null;
-            FileChannel in = null;
-            FileChannel out = null;
-            try {
-                fi = new FileInputStream(s);
-                fo = new FileOutputStream(t);
-                in = fi.getChannel();//得到对应的文件通道
-                out = fo.getChannel();//得到对应的文件通道
-                in.transferTo(0, in.size(), out);//连接两个通道，并且从in通道读取，然后写入out通道
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    fi.close();
-                    in.close();
-                    fo.close();
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        List<String[]> lsFile = new ArrayList<>();
+        for (int i = 0; i < tempList.length; i++) {
+            if (tempList[i].isDirectory()) {
+                //读取某个文件夹下的所有文件夹
+                File[] temp=tempList[i].listFiles();
+                for (int j = 0; j < temp.length; j++) {
+                    String sFilePath = temp[j].toString();
+
+                    sFilePath = sFilePath.substring(8);
+                    String[] parts = sFilePath.split("\\\\");
+                    if (parts[1].equals("大件运输逃费")){
+                        parts[1] = String.valueOf(1);
+                    }else if (parts[1].equals("逃费假证")){
+                        parts[1] = String.valueOf(2);
+                    }
+                    lsFile.add(parts);
                 }
             }
         }
 
-    }
-
-
-    @Test
-    public void ps() {
-        String d = d("9502x5500x1550mm");
-        System.out.println(d);
 
     }
 
@@ -252,23 +226,67 @@ class IncludeDrivingPermitApplicationTests {
     }
 
     @Test
-    void save2(){
-        System.out.println(new Date());
-        Process proc;
-        try {
-            proc = Runtime.getRuntime().exec("python D:\\start2.py");// 执行py文件
-            //用输入输出流来截取结果
-            BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            String line = null;
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
+    public void test2(){
+        File dirFile = new File("D:\\一车一档");
+        ArrayList<String> lsAllFileUrl = new ArrayList<String>();
+
+        if (dirFile.exists()) {
+            //直接取出利用listFiles()把当前路径下的所有文件夹、文件存放到一个文件数组
+            File files[] = dirFile.listFiles();
+            for (File objFile : files) {
+                //如果传递过来的参数dirFile是以文件分隔符，也就是/或者\结尾，则如此构造
+                if (dirFile.getPath().endsWith(File.separator)) {
+                    lsAllFileUrl.add(dirFile.getPath() + objFile.getName());
+                } else {
+                    //否则，如果没有文件分隔符，则补上一个文件分隔符，再加上文件名，才是路径
+                    lsAllFileUrl.add(dirFile.getPath() + File.separator + objFile.getName());
+                }
             }
-            in.close();
-            proc.waitFor();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+
+        for (String sFileUrl : lsAllFileUrl) {
+            ArrayList<String> lsFileUrl = new ArrayList<String>();
+
+            File objFile = new File(sFileUrl);
+            File files[] = objFile.listFiles();
+            for (File file : files) {
+                //如果传递过来的参数dirFile是以文件分隔符，也就是/或者\结尾，则如此构造
+                if (objFile.getPath().endsWith(File.separator)) {
+                    lsFileUrl.add(objFile.getPath() + file.getName());
+                } else {
+                    //否则，如果没有文件分隔符，则补上一个文件分隔符，再加上文件名，才是路径
+                    lsFileUrl.add(objFile.getPath() + File.separator + file.getName());
+                }
+            }
+
+            boolean isFake = false;
+            for (String sFileName : lsFileUrl) {
+                if (sFileName.contains("逃费假证")){
+                    isFake = true;
+                }
+            }
+
+            if (!isFake){
+                boolean b = deleteDir(objFile);
+            }
+        }
+    }
+
+    public static boolean deleteDir(File objFile){
+        if (objFile.isDirectory()) {
+            String[] children = objFile.list();
+            //递归删除目录中的子目录下
+            for (int i=0; i<children.length; i++) {
+                boolean success = deleteDir(new File(objFile, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return objFile.delete();
+    }
+
+    public static void main(String[] args) {
+        deleteDir(new File("D:\\1234"));
     }
 }
